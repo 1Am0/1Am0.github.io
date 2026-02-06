@@ -1,0 +1,75 @@
+.experience {
+  padding: 5rem 1.5rem;
+  background-color: var(--bg-secondary);
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.heading {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 2.5rem;
+  text-align: center;
+}
+
+.timeline {
+  position: relative;
+  padding-left: 2rem;
+  border-left: 2px solid var(--border);
+}
+
+.item {
+  position: relative;
+  margin-bottom: 2.5rem;
+}
+
+.item:last-child {
+  margin-bottom: 0;
+}
+
+.dot {
+  position: absolute;
+  left: -2.6rem;
+  top: 0.25rem;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: var(--accent);
+  border: 3px solid var(--bg-secondary);
+}
+
+.card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+}
+
+.title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.company {
+  font-size: 0.95rem;
+  color: var(--accent);
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.period {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.75rem;
+}
+
+.desc {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}

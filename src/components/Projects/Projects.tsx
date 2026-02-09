@@ -2,10 +2,12 @@ import styles from './Projects.module.css';
 
 const projects = [
   {
-    title: '[Project Name 1]',
+    title: 'Chess Canopy',
     description:
-      'A brief description of the project, what it does, and what problem it solves. Replace with your own project details.',
-    tags: ['[Tech 1]', '[Tech 2]', '[Tech 3]'],
+      'A modern chess platform featuring clean UI, move validation, and a smooth play experience. Built to feel fast and intuitive for casual and competitive matches.',
+    tags: ['TypeScript', 'React', 'Board Logic', 'UI'],
+    liveUrl: 'https://github.com/1Am0/Chess-Canopy',
+    codeUrl: 'https://github.com/1Am0/Chess-Canopy',
   },
   {
     title: '[Project Name 2]',
@@ -39,10 +41,20 @@ export default function Projects() {
                 ))}
               </div>
               <div className={styles.cardLinks}>
-                <a href="#" className={styles.cardLink}>
+                <a
+                  href={project.liveUrl ?? '#'}
+                  className={styles.cardLink}
+                  target="_blank"
+                  rel="noreferrer"
+                >
                   View Project 🔗
                 </a>
-                <a href="#" className={styles.cardLink}>
+                <a
+                  href={project.codeUrl ?? '#'}
+                  className={styles.cardLink}
+                  target="_blank"
+                  rel="noreferrer"
+                >
                   Source Code 💻
                 </a>
               </div>

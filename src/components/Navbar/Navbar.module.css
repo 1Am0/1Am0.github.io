@@ -4,9 +4,10 @@
   left: 0;
   right: 0;
   z-index: 1000;
-  background-color: var(--bg-primary);
+  background: rgba(5, 7, 18, 0.75);
   border-bottom: 1px solid var(--border);
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
 }
 
 .container {
@@ -20,9 +21,10 @@
 }
 
 .logo {
-  font-weight: 700;
-  font-size: 1.25rem;
+  font-weight: 800;
+  font-size: 1.2rem;
   color: var(--text-primary);
+  letter-spacing: 0.02em;
 }
 
 .links {
@@ -32,13 +34,15 @@
 
 .link {
   color: var(--text-secondary);
-  font-weight: 500;
+  font-weight: 600;
   font-size: 0.95rem;
-  transition: color 0.2s;
+  position: relative;
+  transition: color 0.2s, transform 0.2s;
 }
 
 .link:hover {
   color: var(--accent);
+  transform: translateY(-2px);
 }
 
 .actions {
@@ -47,26 +51,12 @@
   gap: 0.5rem;
 }
 
-.themeToggle {
-  background: none;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 0.4rem 0.6rem;
-  font-size: 1.1rem;
-  line-height: 1;
-  transition: border-color 0.2s;
-}
-
-.themeToggle:hover {
-  border-color: var(--accent);
-}
-
 .hamburger {
   display: none;
-  background: none;
+  background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 0.4rem 0.6rem;
+  border-radius: 10px;
+  padding: 0.45rem 0.65rem;
   font-size: 1.2rem;
   line-height: 1;
   color: var(--text-primary);

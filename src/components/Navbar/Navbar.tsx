@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useTheme } from '../../context/ThemeContext';
 import styles from './Navbar.module.css';
 
 const navLinks = [
@@ -11,7 +10,6 @@ const navLinks = [
 ];
 
 export default function Navbar() {
-  const { theme, toggleTheme } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
 
   const handleLinkClick = () => {
@@ -22,7 +20,7 @@ export default function Navbar() {
     <nav className={styles.navbar}>
       <div className={styles.container}>
         <a href="#" className={styles.logo}>
-          [Your Name]
+          Anthony Mokhov
         </a>
 
         <ul className={`${styles.links} ${menuOpen ? styles.open : ''}`}>
@@ -36,14 +34,6 @@ export default function Navbar() {
         </ul>
 
         <div className={styles.actions}>
-          <button
-            className={styles.themeToggle}
-            onClick={toggleTheme}
-            aria-label="Toggle theme"
-          >
-            {theme === 'light' ? '🌙' : '☀️'}
-          </button>
-
           <button
             className={styles.hamburger}
             onClick={() => setMenuOpen(prev => !prev)}

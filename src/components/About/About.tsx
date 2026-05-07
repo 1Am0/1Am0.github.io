@@ -1,9 +1,9 @@
 import styles from './About.module.css';
 
 const stats = [
-  { value: '[X]+', label: 'Years Experience' },
-  { value: '[X]+', label: 'Projects Completed' },
-  { value: '[X]+', label: 'Technologies' },
+  { value: '3rd', label: 'Ranked in Class' },
+  { value: '50+', label: 'Volunteer Hours' },
+  { value: '7', label: 'AP Classes Completed' },
 ];
 
 export default function About() {
@@ -12,10 +12,7 @@ export default function About() {
       <div className={styles.container}>
         <h2 className={styles.heading}>About Me</h2>
         <p className={styles.bio}>
-          I'm a [your role] based in [your location]. I enjoy turning complex problems
-          into simple, beautiful, and intuitive solutions. When I'm not coding, you'll
-          find me [your hobbies]. Replace this paragraph with your own bio to tell
-          visitors about your background, passions, and what drives you.
+          I'm a junior at Patrick Henry High School in San Diego with a passion for computer science and competitive chess. I excel at turning complex mathematical and algorithmic problems into elegant solutions. Beyond coding, I'm a three-year varsity wrestler and a chess expert who competes nationally. I love teaching others—whether through tutoring math or directing chess tournaments—because I believe in making learning accessible and engaging.
         </p>
         <div className={styles.stats}>
           {stats.map(stat => (

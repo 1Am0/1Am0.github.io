@@ -8,10 +8,10 @@ export default function Footer() {
           <a href="https://github.com/1Am0" className={styles.link} aria-label="GitHub" target="_blank" rel="noreferrer">
             🔗 GitHub
           </a>
-          <a href="https://www.linkedin.com" className={styles.link} aria-label="LinkedIn" target="_blank" rel="noreferrer">
+          <a href="https://www.linkedin.com/in/anthony-mokhov" className={styles.link} aria-label="LinkedIn" target="_blank" rel="noreferrer">
             💼 LinkedIn
           </a>
-          <a href="mailto:hello@1am0.dev" className={styles.link} aria-label="Email">
+          <a href="mailto:anthony.mokhov@gmail.com" className={styles.link} aria-label="Email">
             📧 Email
           </a>
         </div>

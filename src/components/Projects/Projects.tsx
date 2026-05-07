@@ -4,22 +4,24 @@ const projects = [
   {
     title: 'Chess Canopy',
     description:
-      'A modern chess platform featuring clean UI, move validation, and a smooth play experience. Built to feel fast and intuitive for casual and competitive matches.',
-    tags: ['TypeScript', 'React', 'Board Logic', 'UI'],
+      'Open-source full-stack chess analyzer built with Python, JavaScript, and API integration. Features a pattern recognition system analyzing 3,800+ openings across large datasets for competitive advantage.',
+    tags: ['Python', 'JavaScript', 'ML', 'API'],
     liveUrl: 'https://github.com/1Am0/Chess-Canopy',
     codeUrl: 'https://github.com/1Am0/Chess-Canopy',
   },
   {
-    title: '[Project Name 2]',
+    title: 'Molar Mass Calculator',
     description:
-      'A brief description of the project, what it does, and what problem it solves. Replace with your own project details.',
-    tags: ['[Tech 1]', '[Tech 2]', '[Tech 3]'],
+      'Next.js application that automates molecular calculations aligned with AP Chemistry standards. Integrated a precise database to help students solve complex lab problems efficiently.',
+    tags: ['Next.js', 'React', 'Chemistry', 'Database'],
+    liveUrl: '#',
+    codeUrl: '#',
   },
   {
-    title: '[Project Name 3]',
+    title: 'Game Development Projects',
     description:
-      'A brief description of the project, what it does, and what problem it solves. Replace with your own project details.',
-    tags: ['[Tech 1]', '[Tech 2]', '[Tech 3]'],
+      'Created various game development projects exploring game mechanics, graphics programming, and interactive experiences. Focused on learning game engines and physics systems.',
+    tags: ['Game Dev', 'Physics', 'Graphics', 'Interactive'],
   },
 ];
 

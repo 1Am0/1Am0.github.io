@@ -19,7 +19,7 @@ export default function Contact() {
       <div className={styles.container}>
         <h2 className={styles.heading}>Get In Touch</h2>
         <p className={styles.subtitle}>
-          Have a question or want to work together? Drop me a message!
+          Reach out at <strong>anthony.mokhov@gmail.com</strong> or call <strong>(619) 966 8773</strong>
         </p>
         <form className={styles.form} onSubmit={handleSubmit}>
           <div className={styles.field}>

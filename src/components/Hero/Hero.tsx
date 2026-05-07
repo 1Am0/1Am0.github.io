@@ -5,15 +5,15 @@ export default function Hero() {
     <header className={styles.hero}>
       <div className={styles.container}>
         <div className={styles.content}>
-          <div className={styles.badge}>Currently available for new projects</div>
+          <div className={styles.badge}>High School Student | San Diego</div>
           <h1 className={styles.heading}>
             Hi, I'm <span className={styles.accent}>Anthony Mokhov</span>
           </h1>
-          <p className={styles.subtitle}>Full-stack engineer crafting immersive web experiences</p>
+          <p className={styles.subtitle}>Computer Science student & competitive chess player</p>
           <p className={styles.description}>
-            I blend thoughtful design with resilient engineering to ship experiences that feel smooth,
-            performant, and delightful. From interactive frontends to scalable APIs, I care about
-            the details that make products memorable.
+            I build intelligent systems and full-stack applications from concept to deployment. Whether it's chess algorithms,
+            molecular calculators, or web experiences, I focus on solving real problems with elegant code. 
+            Expert chess title holder | 4.75 GPA | AP Scholar with Distinction.
           </p>
           <div className={styles.cta}>
             <a href="#projects" className={styles.btnPrimary}>
@@ -25,16 +25,16 @@ export default function Hero() {
           </div>
           <div className={styles.stats}>
             <div className={styles.statCard}>
-              <span className={styles.statLabel}>Projects delivered</span>
-              <span className={styles.statValue}>25+</span>
+              <span className={styles.statLabel}>GPA</span>
+              <span className={styles.statValue}>4.75</span>
             </div>
             <div className={styles.statCard}>
-              <span className={styles.statLabel}>Years coding</span>
-              <span className={styles.statValue}>6</span>
+              <span className={styles.statLabel}>AP Classes</span>
+              <span className={styles.statValue}>7</span>
             </div>
             <div className={styles.statCard}>
-              <span className={styles.statLabel}>Response time</span>
-              <span className={styles.statValue}>~24h</span>
+              <span className={styles.statLabel}>Chess Rank</span>
+              <span className={styles.statValue}>Top 70</span>
             </div>
           </div>
         </div>

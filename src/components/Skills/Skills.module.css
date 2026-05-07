@@ -70,3 +70,8 @@
 .certifications > div {
   background: transparent;
 }
+
+.certificationBadge {
+  border: 0;
+  background: transparent;
+}

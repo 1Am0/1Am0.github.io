@@ -2,25 +2,25 @@ import styles from './Experience.module.css';
 
 const experiences = [
   {
-    title: '[Job Title]',
-    company: '[Company Name]',
-    period: '[Start Date] – [End Date]',
+    title: 'SAT Tutor',
+    company: 'Schoolhouse & CollegeBoard',
+    period: 'Present',
     description:
-      'Describe your responsibilities and achievements in this role. Highlight key contributions and technologies used.',
+      'Tutoring high school students to prepare them for the math SAT test. Working with non-profit organizations to make quality education accessible.',
   },
   {
-    title: '[Job Title]',
-    company: '[Company Name]',
-    period: '[Start Date] – [End Date]',
+    title: 'San Diego Chess Club Tournament Assistant',
+    company: 'San Diego Chess Club',
+    period: '2024 – Present',
     description:
-      'Describe your responsibilities and achievements in this role. Highlight key contributions and technologies used.',
+      'Direct monthly scholastic tournaments with 100+ players. Organize pairings, oversee registration, enforce fair play rules, and resolve disputes to create a welcoming competitive environment for youth.',
   },
   {
-    title: '[Job Title]',
-    company: '[Company Name]',
-    period: '[Start Date] – [End Date]',
+    title: 'Volunteer Thinkist Tutor',
+    company: 'Thinkist',
+    period: '2025',
     description:
-      'Describe your responsibilities and achievements in this role. Highlight key contributions and technologies used.',
+      'Mentored middle school students in foundational mathematics through weekly tutoring sessions. Completed professional pedagogical training and totaled 50+ volunteer hours, demonstrating commitment to community service.',
   },
 ];
 

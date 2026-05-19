@@ -12,7 +12,7 @@ const projects = [
   {
     title: 'final-project-1Am0',
     description:
-      'A finished Minesweeper game implemented in Java using Swing, with multiple difficulty levels, a timer, flagging, and a safe first click.',
+      'A feature-complete Minesweeper game implemented in Java using Swing, with multiple difficulty levels, a timer, flagging, and a safe first click.',
     tags: ['Java', 'Swing', 'Game Development'],
     liveUrl: 'https://github.com/phAPCSA25period1/final-project-1Am0',
     codeUrl: 'https://github.com/phAPCSA25period1/final-project-1Am0',

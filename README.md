@@ -1,74 +1,106 @@
-# Portfolio Template
+# Digital Portfolio
 
-A modern, interactive portfolio website built with **React**, **TypeScript**, and **Vite**. Features a dark/light theme toggle, responsive design, and placeholder content ready to customize.
+Professional portfolio website built with React, TypeScript, and Vite. The project includes a responsive single-page layout, theme switching, and a working contact form powered by EmailJS.
 
-## ✨ Features
+## Overview
 
-- **React + TypeScript** — Type-safe, component-based architecture
-- **Vite** — Lightning-fast dev server and optimized builds
-- **CSS Modules** — Scoped, maintainable styles
-- **Dark / Light Theme** — Toggle with localStorage persistence
-- **Responsive** — Looks great on mobile and desktop
-- **Interactive Contact Form** — Client-side validation
-- **Sections**: Hero, About, Projects, Experience, Skills, Contact
+This repository is designed as a production-ready personal portfolio template. It provides clear component separation, maintainable styling with CSS Modules, and a straightforward configuration path for deployment.
 
-## 🚀 Getting Started
+## Core Features
+
+- React 19 with TypeScript for type-safe, component-based development
+- Vite for fast development and optimized builds
+- CSS Modules for scoped styles
+- Light and dark theme support with saved user preference
+- Responsive layout for mobile and desktop
+- Contact form with real email delivery through EmailJS
+
+## Tech Stack
+
+- React
+- TypeScript
+- Vite
+- CSS Modules
+- EmailJS
+
+## Quick Start
 
 ```bash
-# Install dependencies
 npm install
-
-# Start dev server
 npm run dev
+```
 
-# Build for production
+## Available Scripts
+
+```bash
+npm run dev
 npm run build
-
-# Preview production build
 npm run preview
+npm run lint
+npm run deploy
 ```
 
-## 🎨 Customizing
+## Contact Form Configuration (EmailJS)
 
-Replace the placeholder text throughout the components in `src/components/`:
+To enable live email delivery from the contact form:
 
-| Placeholder | Where |
-|---|---|
-| `[Your Name]` | Navbar, Hero, Footer |
-| `[Your Title / Tagline]` | Hero |
-| `[Project Name]` | Projects |
-| `[Tech 1]`, `[Tech 2]` | Projects |
-| `[Job Title]`, `[Company Name]` | Experience |
-| `[Skill 1]`, `[Tool 1]` | Skills |
+1. Create an EmailJS account at https://www.emailjs.com/.
+2. Add an email service in EmailJS.
+3. Create an EmailJS template.
+4. Add the following environment variables to `.env` in the project root.
 
-## 📁 Project Structure
-
+```env
+VITE_EMAILJS_SERVICE_ID=your_service_id
+VITE_EMAILJS_TEMPLATE_ID=your_template_id
+VITE_EMAILJS_PUBLIC_KEY=your_public_key
 ```
+
+5. Restart the development server after changing `.env` values.
+
+### Template Variables
+
+The contact form sends these parameters to EmailJS:
+
+- `name`
+- `email`
+- `message`
+- `title`
+- `time`
+- `from_name`
+- `from_email`
+
+Using both naming styles allows compatibility with common EmailJS template conventions.
+
+## Project Structure
+
+```text
 src/
-├── components/
-│   ├── About/
-│   ├── Contact/
-│   ├── Experience/
-│   ├── Footer/
-│   ├── Hero/
-│   ├── Navbar/
-│   ├── Projects/
-│   └── Skills/
-├── context/
-│   └── ThemeContext.tsx
-├── App.tsx
-├── App.module.css
-├── index.css
-└── main.tsx
+	components/
+		About/
+		Contact/
+		Experience/
+		Footer/
+		Hero/
+		Navbar/
+		Projects/
+		Skills/
+	context/
+		ThemeContext.tsx
+	App.tsx
+	App.module.css
+	index.css
+	main.tsx
 ```
 
-## 🛠 Tech Stack
+## Deployment
 
-- [React 19](https://react.dev/)
-- [TypeScript](https://www.typescriptlang.org/)
-- [Vite](https://vite.dev/)
-- CSS Modules
+This project includes GitHub Pages deployment support through the `gh-pages` package.
 
-## 📄 License
+```bash
+npm run build
+npm run deploy
+```
 
-Free to use and customize for your own portfolio.
+## License
+
+This project is available for personal use and customization.

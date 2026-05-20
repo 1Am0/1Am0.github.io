@@ -41,6 +41,10 @@ const certifications = [
     id: '70932542-e7f2-4a2d-91e9-d21d4feb4adf',
     label: 'AP Scholar with Distinction',
   },
+  {
+    id: '010ae9ae-9edf-4365-aa7b-fcfdddcd6881',
+    label: 'java',
+  },
 ];
 
 export default function Skills() {

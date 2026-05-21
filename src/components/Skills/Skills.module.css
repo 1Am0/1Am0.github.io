@@ -59,19 +59,85 @@
 }
 
 .certifications {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
+  gap: 1.25rem;
   margin-top: 2.5rem;
-  background: transparent;
 }
 
-.certifications > div {
-  background: transparent;
+.certificationCard {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(150deg, var(--bg-card), var(--bg-secondary));
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
 }
 
-.certificationBadge {
-  border: 0;
-  background: transparent;
+.certificationCard:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+}
+
+.certificationGlow {
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 140px;
+  height: 140px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(125, 211, 252, 0.22), transparent 70%);
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent) 30%, transparent), transparent 70%);
+  pointer-events: none;
+}
+
+.certificationIcon {
+  width: 2.5rem;
+  height: 2.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  font-size: 1.2rem;
+  background-color: rgba(125, 211, 252, 0.14);
+  background-color: color-mix(in srgb, var(--accent) 16%, transparent);
+  border: 1px solid rgba(125, 211, 252, 0.36);
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+.certificationTitle {
+  margin-top: 0.9rem;
+  font-size: 1.05rem;
+  line-height: 1.4;
+}
+
+.certificationIssuer {
+  margin-top: 0.35rem;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.certificationLink {
+  margin-top: 1rem;
+  display: inline-flex;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.certificationLink:hover {
+  color: var(--accent-hover);
+}
+
+@media (max-width: 767px) {
+  .certifications {
+    grid-template-columns: 1fr;
+  }
 }

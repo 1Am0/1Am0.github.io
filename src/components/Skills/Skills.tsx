@@ -1,17 +1,4 @@
-import { useEffect } from 'react';
 import styles from './Skills.module.css';
-
-declare global {
-  interface Window {
-    Credly?: {
-      embed?: {
-        lib?: {
-          render: (element: HTMLElement) => void;
-        };
-      };
-    };
-  }
-}
 
 const skillGroups = [
   {
@@ -31,50 +18,31 @@ const skillGroups = [
 const certifications = [
   {
     id: '62212f49-92a3-4e48-9f71-7d2b0afa0cfe',
-    label: 'USChess Expert Title',
+    title: 'US Chess Expert',
+    issuer: 'US Chess Federation',
+    accent: '♟️',
   },
   {
     id: '721a145f-805e-486a-b4a1-b34f11546546',
-    label: 'International Piano Competitions',
+    title: 'International Piano Competitions',
+    issuer: 'Performance & Awards',
+    accent: '🎹',
   },
   {
     id: '70932542-e7f2-4a2d-91e9-d21d4feb4adf',
-    label: 'AP Scholar with Distinction',
+    title: 'AP Scholar with Distinction',
+    issuer: 'College Board',
+    accent: '🏅',
   },
   {
     id: '010ae9ae-9edf-4365-aa7b-fcfdddcd6881',
-    label: 'java',
+    title: 'Java Certification',
+    issuer: 'Credly',
+    accent: '☕',
   },
 ];
 
 export default function Skills() {
-  useEffect(() => {
-    // Ensure the Credly embed script runs after badges are mounted.
-    // We append a cache-busted script tag so the embed script executes and
-    // replaces elements with data-share-badge-id into iframes.
-    const src = 'https://cdn.credly.com/assets/utilities/embed.js?_=' + Date.now();
-    const existing = document.querySelector<HTMLScriptElement>("script[src*='cdn.credly.com/assets/utilities/embed.js']");
-    // If an existing non-busted script exists, remove it so we can re-run embed logic.
-    if (existing) existing.remove();
-
-    const script = document.createElement('script');
-    script.type = 'text/javascript';
-    script.src = src;
-    script.async = true;
-    script.onload = () => console.debug('Credly embed script loaded');
-    script.onerror = (e) => console.error('Credly script failed to load', e);
-    document.body.appendChild(script);
-
-    return () => {
-      // cleanup injected script on unmount
-      try {
-        script.remove();
-      } catch (e) {
-        /* ignore */
-      }
-    };
-  }, []);
-
   return (
     <section id="skills" className={styles.skills}>
       <div className={styles.container}>
@@ -94,16 +62,24 @@ export default function Skills() {
           ))}
         </div>
         <h2 className={styles.heading}>Certifications</h2>
-        <div id="credly-container" className={styles.certifications}>
-          {certifications.map((cert, index) => (
-            <div
-              key={`cert-${index}`}
-              className={`credly-badge ${styles.certificationBadge}`}
-              data-iframe-width="150"
-              data-iframe-height="270"
-              data-share-badge-id={cert.id}
-              data-share-badge-host="https://www.credly.com"
-            />
+        <div className={styles.certifications}>
+          {certifications.map(cert => (
+            <article key={cert.id} className={styles.certificationCard}>
+              <div className={styles.certificationGlow} />
+              <span className={styles.certificationIcon} aria-hidden="true">
+                {cert.accent}
+              </span>
+              <h3 className={styles.certificationTitle}>{cert.title}</h3>
+              <p className={styles.certificationIssuer}>{cert.issuer}</p>
+              <a
+                href={`https://www.credly.com/badges/${cert.id}/public_url`}
+                target="_blank"
+                rel="noreferrer"
+                className={styles.certificationLink}
+              >
+                View credential
+              </a>
+            </article>
           ))}
         </div>
       </div>

@@ -36,7 +36,7 @@ const certifications = [
   },
   {
     id: '010ae9ae-9edf-4365-aa7b-fcfdddcd6881',
-    title: 'Java Programming Badge',
+    title: 'Java Programming Certification',
     accent: '☕',
   },
 ];

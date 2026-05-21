@@ -37,7 +37,6 @@ const certifications = [
   {
     id: '010ae9ae-9edf-4365-aa7b-fcfdddcd6881',
     title: 'Java Programming Badge',
-    issuer: 'Credential Issuer (as listed on Credly)',
     accent: '☕',
   },
 ];
@@ -70,7 +69,7 @@ export default function Skills() {
                 {cert.accent}
               </span>
               <h3 className={styles.certificationTitle}>{cert.title}</h3>
-              <p className={styles.certificationIssuer}>{cert.issuer}</p>
+              {cert.issuer && <p className={styles.certificationIssuer}>{cert.issuer}</p>}
               <a
                 href={`https://www.credly.com/badges/${cert.id}/public_url`}
                 target="_blank"

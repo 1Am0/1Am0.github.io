@@ -25,7 +25,7 @@ const certifications = [
   {
     id: '721a145f-805e-486a-b4a1-b34f11546546',
     title: 'International Piano Competitions',
-    issuer: 'Performance & Awards',
+    issuer: 'International Music Competition Boards',
     accent: '🎹',
   },
   {
@@ -36,8 +36,8 @@ const certifications = [
   },
   {
     id: '010ae9ae-9edf-4365-aa7b-fcfdddcd6881',
-    title: 'Java Certification',
-    issuer: 'Credly',
+    title: 'Java Programming Badge',
+    issuer: 'Credential Issuer (as listed on Credly)',
     accent: '☕',
   },
 ];

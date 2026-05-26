@@ -8,7 +8,7 @@
   border-bottom: 1px solid var(--border);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  transition: background-color 0.3s ease, border-color 0.3s ease;
+  transition: all 0.4s ease;
 }
 
 .container {
@@ -24,11 +24,12 @@
 .logo {
   display: flex;
   align-items: center;
-  gap: 0.65rem;
+  gap: 0.75rem;
   font-weight: 700;
   font-size: 1rem;
   color: var(--text-primary);
   transition: opacity 0.2s ease;
+  font-family: var(--font-heading);
 }
 
 .logo:hover {
@@ -39,14 +40,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
-  background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+  width: 36px;
+  height: 36px;
+  background: var(--accent);
   color: var(--btn-text);
   font-weight: 800;
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   letter-spacing: -0.02em;
-  border-radius: 8px;
+  border-radius: var(--radius);
+  font-family: var(--font-mono);
+  transition: all 0.3s ease;
 }
 
 .logoText {
@@ -61,7 +64,7 @@
 
 .links {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.25rem;
 }
 
 .link {
@@ -69,9 +72,10 @@
   font-weight: 500;
   font-size: 0.9rem;
   padding: 0.5rem 0.85rem;
-  border-radius: 8px;
+  border-radius: var(--radius);
   position: relative;
-  transition: color 0.2s ease, background-color 0.2s ease;
+  transition: all 0.2s ease;
+  font-family: var(--font-body);
 }
 
 .link:hover {
@@ -91,7 +95,7 @@
   height: 40px;
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius);
   padding: 0;
   position: relative;
 }
@@ -162,10 +166,35 @@
 
   .link {
     padding: 0.75rem 1rem;
-    border-radius: 8px;
+    border-radius: var(--radius);
   }
 
   .hamburger {
     display: flex;
   }
+}
+
+/* Theme-specific navbar styles */
+html[data-theme='retro'] .logoIcon {
+  background: transparent;
+  border: 2px solid var(--accent);
+  color: var(--accent);
+}
+
+html[data-theme='corporate'] .link {
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+}
+
+html[data-theme='elegant'] .logoText {
+  font-style: italic;
+}
+
+html[data-theme='neon'] .logoIcon {
+  box-shadow: var(--glow);
+}
+
+html[data-theme='playful'] .logoIcon {
+  border-radius: 50%;
 }

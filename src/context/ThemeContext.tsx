@@ -1,20 +1,29 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 
 export type Theme = 
-  | 'midnight'      // Deep dark with blue accents (original dark)
-  | 'light'         // Clean bright white
-  | 'ocean'         // Deep teal/blue professional
-  | 'forest'        // Nature-inspired green
-  | 'sunset'        // Warm orange/coral tones
-  | 'lavender';     // Soft purple/violet
+  | 'minimal'      // Clean white, sans-serif, flat design
+  | 'corporate'    // Professional dark, geometric, bold
+  | 'retro'        // Terminal green, monospace, nostalgic
+  | 'elegant'      // Cream/warm, serif fonts, classic
+  | 'neon'         // Cyberpunk dark, glowing accents
+  | 'playful';     // Soft pastels, rounded, friendly
 
 export const themeLabels: Record<Theme, string> = {
-  midnight: 'Midnight',
-  light: 'Light',
-  ocean: 'Ocean',
-  forest: 'Forest',
-  sunset: 'Sunset',
-  lavender: 'Lavender',
+  minimal: 'Minimal',
+  corporate: 'Corporate',
+  retro: 'Retro',
+  elegant: 'Elegant',
+  neon: 'Neon',
+  playful: 'Playful',
+};
+
+export const themeDescriptions: Record<Theme, string> = {
+  minimal: 'Clean & Modern',
+  corporate: 'Bold & Professional',
+  retro: 'Terminal Style',
+  elegant: 'Classic & Warm',
+  neon: 'Cyberpunk Glow',
+  playful: 'Soft & Friendly',
 };
 
 interface ThemeContextType {
@@ -25,7 +34,7 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-const themes: Theme[] = ['midnight', 'light', 'ocean', 'forest', 'sunset', 'lavender'];
+const themes: Theme[] = ['minimal', 'corporate', 'retro', 'elegant', 'neon', 'playful'];
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<Theme>(() => {
@@ -33,7 +42,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       const saved = localStorage.getItem('portfolio-theme') as Theme;
       if (saved && themes.includes(saved)) return saved;
     }
-    return 'ocean';
+    return 'minimal';
   });
 
   useEffect(() => {

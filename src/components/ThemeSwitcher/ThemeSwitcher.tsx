@@ -1,14 +1,23 @@
 import { useState, useRef, useEffect } from 'react';
-import { useTheme, themeLabels, type Theme } from '../../context/ThemeContext';
+import { useTheme, themeLabels, themeDescriptions, type Theme } from '../../context/ThemeContext';
 import styles from './ThemeSwitcher.module.css';
 
 const themeColors: Record<Theme, string> = {
-  midnight: '#60a5fa',
-  light: '#0ea5e9',
-  ocean: '#22d3ee',
-  forest: '#4ade80',
-  sunset: '#fb923c',
-  lavender: '#a78bfa',
+  minimal: '#0f172a',
+  corporate: '#fafafa',
+  retro: '#22c55e',
+  elegant: '#b45309',
+  neon: '#e879f9',
+  playful: '#d946ef',
+};
+
+const themeIcons: Record<Theme, string> = {
+  minimal: 'M',
+  corporate: 'C',
+  retro: '>_',
+  elegant: 'E',
+  neon: 'N',
+  playful: 'P',
 };
 
 export default function ThemeSwitcher() {
@@ -36,9 +45,14 @@ export default function ThemeSwitcher() {
         aria-expanded={isOpen}
       >
         <span 
-          className={styles.colorDot} 
-          style={{ backgroundColor: themeColors[theme] }}
-        />
+          className={styles.themeIcon} 
+          style={{ 
+            backgroundColor: themeColors[theme],
+            color: theme === 'corporate' ? '#09090b' : '#fff'
+          }}
+        >
+          {themeIcons[theme]}
+        </span>
         <span className={styles.label}>{themeLabels[theme]}</span>
         <svg
           className={`${styles.chevron} ${isOpen ? styles.chevronOpen : ''}`}
@@ -60,7 +74,7 @@ export default function ThemeSwitcher() {
 
       {isOpen && (
         <div className={styles.dropdown}>
-          <div className={styles.dropdownHeader}>Choose Theme</div>
+          <div className={styles.dropdownHeader}>Select Theme</div>
           <div className={styles.options}>
             {themes.map((t) => (
               <button
@@ -72,20 +86,28 @@ export default function ThemeSwitcher() {
                 }}
               >
                 <span 
-                  className={styles.optionDot} 
-                  style={{ backgroundColor: themeColors[t] }}
-                />
-                <span className={styles.optionLabel}>{themeLabels[t]}</span>
+                  className={styles.optionIcon} 
+                  style={{ 
+                    backgroundColor: themeColors[t],
+                    color: t === 'corporate' ? '#09090b' : '#fff'
+                  }}
+                >
+                  {themeIcons[t]}
+                </span>
+                <div className={styles.optionText}>
+                  <span className={styles.optionLabel}>{themeLabels[t]}</span>
+                  <span className={styles.optionDesc}>{themeDescriptions[t]}</span>
+                </div>
                 {theme === t && (
                   <svg
                     className={styles.checkIcon}
-                    width="14"
-                    height="14"
-                    viewBox="0 0 14 14"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
                     fill="none"
                   >
                     <path
-                      d="M11.5 4L5.5 10L2.5 7"
+                      d="M13 4.5L6.5 11L3 7.5"
                       stroke="currentColor"
                       strokeWidth="2"
                       strokeLinecap="round"

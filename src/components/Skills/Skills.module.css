@@ -1,7 +1,7 @@
 .skills {
   padding: 6rem 1.5rem;
   background-color: var(--bg-primary);
-  transition: background-color 0.3s ease;
+  transition: all 0.4s ease;
 }
 
 .container {
@@ -15,6 +15,8 @@
   margin-bottom: 2.5rem;
   text-align: center;
   letter-spacing: -0.02em;
+  font-family: var(--font-heading);
+  text-transform: var(--heading-transform);
 }
 
 .groups {
@@ -25,26 +27,27 @@
 
 .group {
   background-color: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border: var(--card-border-style);
+  border-radius: var(--radius-lg);
   padding: 1.75rem;
   box-shadow: var(--shadow);
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
 }
 
 .group:hover {
   border-color: var(--border-accent);
-  transform: translateY(-3px);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
 }
 
 .category {
-  font-size: 1rem;
+  font-size: 0.8rem;
   font-weight: 700;
   margin-bottom: 1rem;
   color: var(--accent);
   text-transform: uppercase;
-  letter-spacing: 0.03em;
-  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  font-family: var(--font-heading);
 }
 
 .pills {
@@ -56,12 +59,13 @@
 .pill {
   background: var(--accent-subtle);
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: var(--radius);
   padding: 0.4rem 0.9rem;
   font-size: 0.8rem;
   font-weight: 500;
   color: var(--text-primary);
-  transition: all 0.15s ease;
+  transition: all 0.2s ease;
+  font-family: var(--font-body);
 }
 
 .pill:hover {
@@ -92,11 +96,11 @@
   position: relative;
   overflow: hidden;
   background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border: var(--card-border-style);
+  border-radius: var(--radius-lg);
   padding: 1.5rem;
   box-shadow: var(--shadow);
-  transition: all 0.25s ease;
+  transition: all 0.3s ease;
 }
 
 .certificationCard:hover {
@@ -122,7 +126,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 10px;
+  border-radius: var(--radius);
   font-size: 1.15rem;
   background: var(--accent-subtle);
   border: 1px solid var(--border-accent);
@@ -133,12 +137,14 @@
   font-size: 1rem;
   font-weight: 600;
   line-height: 1.4;
+  font-family: var(--font-heading);
 }
 
 .certificationIssuer {
   margin-top: 0.35rem;
   font-size: 0.85rem;
   color: var(--text-secondary);
+  font-family: var(--font-body);
 }
 
 .certificationLink {
@@ -150,14 +156,84 @@
   font-weight: 600;
   color: var(--accent);
   transition: opacity 0.2s ease;
+  font-family: var(--font-body);
 }
 
 .certificationLink:hover {
-  opacity: 0.75;
+  opacity: 0.7;
 }
 
 @media (max-width: 600px) {
   .certifications {
     grid-template-columns: 1fr;
   }
+}
+
+/* Theme-specific Skills styles */
+html[data-theme='minimal'] .pill {
+  background: transparent;
+  border-color: var(--text-primary);
+}
+
+html[data-theme='corporate'] .pill {
+  border-radius: 0;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+}
+
+html[data-theme='corporate'] .group {
+  border-width: 2px;
+}
+
+html[data-theme='retro'] .group {
+  background: transparent;
+}
+
+html[data-theme='retro'] .category::before {
+  content: '/* ';
+}
+
+html[data-theme='retro'] .category::after {
+  content: ' */';
+}
+
+html[data-theme='retro'] .pill {
+  border-radius: 0;
+  background: transparent;
+  border-color: var(--accent);
+  font-family: var(--font-mono);
+}
+
+html[data-theme='elegant'] .category {
+  font-style: italic;
+  text-transform: none;
+  font-size: 0.9rem;
+}
+
+html[data-theme='elegant'] .pill {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  border-radius: 0;
+}
+
+html[data-theme='neon'] .group {
+  box-shadow: var(--shadow);
+}
+
+html[data-theme='neon'] .pill {
+  box-shadow: 0 0 8px rgba(232, 121, 249, 0.15);
+}
+
+html[data-theme='playful'] .pill {
+  border-radius: 999px;
+}
+
+html[data-theme='playful'] .group:hover {
+  transform: translateY(-5px) rotate(-0.5deg);
+}
+
+html[data-theme='playful'] .certificationCard:hover {
+  transform: translateY(-5px) rotate(0.5deg);
 }

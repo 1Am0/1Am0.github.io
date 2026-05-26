@@ -2,7 +2,7 @@
   padding: 2.5rem 1.5rem;
   background-color: var(--bg-primary);
   border-top: 1px solid var(--border);
-  transition: all 0.3s ease;
+  transition: all 0.4s ease;
 }
 
 .container {
@@ -26,6 +26,7 @@
   font-weight: 500;
   transition: color 0.2s ease;
   position: relative;
+  font-family: var(--font-body);
 }
 
 .link:hover {
@@ -35,6 +36,7 @@
 .copy {
   font-size: 0.85rem;
   color: var(--text-secondary);
+  font-family: var(--font-body);
 }
 
 @media (max-width: 480px) {
@@ -43,4 +45,28 @@
     flex-wrap: wrap;
     justify-content: center;
   }
+}
+
+/* Theme-specific Footer styles */
+html[data-theme='corporate'] .link {
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+}
+
+html[data-theme='retro'] .copy::before {
+  content: '// ';
+  opacity: 0.5;
+}
+
+html[data-theme='retro'] .link {
+  font-family: var(--font-mono);
+}
+
+html[data-theme='elegant'] .copy {
+  font-style: italic;
+}
+
+html[data-theme='neon'] .link:hover {
+  text-shadow: 0 0 10px rgba(232, 121, 249, 0.5);
 }

@@ -1,7 +1,7 @@
 .contact {
   padding: 6rem 1.5rem;
   background-color: var(--bg-secondary);
-  transition: background-color 0.3s ease;
+  transition: all 0.4s ease;
 }
 
 .container {
@@ -15,6 +15,8 @@
   margin-bottom: 0.5rem;
   text-align: center;
   letter-spacing: -0.02em;
+  font-family: var(--font-heading);
+  text-transform: var(--heading-transform);
 }
 
 .subtitle {
@@ -22,6 +24,7 @@
   color: var(--text-secondary);
   text-align: center;
   margin-bottom: 2.5rem;
+  font-family: var(--font-body);
 }
 
 .form {
@@ -37,23 +40,25 @@
 }
 
 .label {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: var(--text-primary);
   text-transform: uppercase;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.04em;
+  font-family: var(--font-body);
 }
 
 .input,
 .textarea {
   padding: 0.875rem 1rem;
-  border: 1px solid var(--border);
+  border: var(--card-border-style);
   border-radius: var(--radius);
   background-color: var(--bg-card);
   color: var(--text-primary);
   font-size: 0.95rem;
   outline: none;
   transition: all 0.2s ease;
+  font-family: var(--font-body);
 }
 
 .input::placeholder,
@@ -74,7 +79,7 @@
 }
 
 .submit {
-  background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+  background: var(--accent);
   color: var(--btn-text);
   border: none;
   border-radius: var(--radius);
@@ -83,11 +88,12 @@
   font-weight: 600;
   transition: all 0.2s ease;
   margin-top: 0.5rem;
+  font-family: var(--font-body);
 }
 
 .submit:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow), var(--glow);
+  box-shadow: var(--shadow-lg);
 }
 
 .submit:active {
@@ -103,6 +109,7 @@
   color: #10b981;
   font-weight: 600;
   text-align: center;
+  font-family: var(--font-body);
 }
 
 .error {
@@ -114,10 +121,77 @@
   color: #f87171;
   font-weight: 600;
   text-align: center;
+  font-family: var(--font-body);
 }
 
 @media (max-width: 767px) {
   .contact {
     padding: 4rem 1.25rem;
   }
+}
+
+/* Theme-specific Contact styles */
+html[data-theme='minimal'] .input:focus,
+html[data-theme='minimal'] .textarea:focus {
+  box-shadow: none;
+  border-color: var(--text-primary);
+}
+
+html[data-theme='corporate'] .input,
+html[data-theme='corporate'] .textarea {
+  border-width: 2px;
+}
+
+html[data-theme='corporate'] .submit {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.85rem;
+}
+
+html[data-theme='retro'] .input,
+html[data-theme='retro'] .textarea {
+  background: transparent;
+  font-family: var(--font-mono);
+}
+
+html[data-theme='retro'] .input:focus,
+html[data-theme='retro'] .textarea:focus {
+  box-shadow: var(--glow);
+}
+
+html[data-theme='retro'] .submit {
+  box-shadow: var(--glow);
+}
+
+html[data-theme='retro'] .label::before {
+  content: '> ';
+  opacity: 0.5;
+}
+
+html[data-theme='elegant'] .label {
+  text-transform: none;
+  font-style: italic;
+  letter-spacing: 0;
+}
+
+html[data-theme='neon'] .input:focus,
+html[data-theme='neon'] .textarea:focus {
+  box-shadow: var(--glow);
+}
+
+html[data-theme='neon'] .submit {
+  box-shadow: var(--glow);
+}
+
+html[data-theme='playful'] .input,
+html[data-theme='playful'] .textarea {
+  border-radius: var(--radius-lg);
+}
+
+html[data-theme='playful'] .submit {
+  border-radius: 999px;
+}
+
+html[data-theme='playful'] .submit:hover {
+  transform: translateY(-3px) rotate(-1deg);
 }

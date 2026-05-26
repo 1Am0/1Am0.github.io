@@ -1,25 +1,52 @@
-import { createContext, useContext, useEffect, type ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 
-type Theme = 'light' | 'dark';
+export type Theme = 
+  | 'midnight'      // Deep dark with blue accents (original dark)
+  | 'light'         // Clean bright white
+  | 'ocean'         // Deep teal/blue professional
+  | 'forest'        // Nature-inspired green
+  | 'sunset'        // Warm orange/coral tones
+  | 'lavender';     // Soft purple/violet
+
+export const themeLabels: Record<Theme, string> = {
+  midnight: 'Midnight',
+  light: 'Light',
+  ocean: 'Ocean',
+  forest: 'Forest',
+  sunset: 'Sunset',
+  lavender: 'Lavender',
+};
 
 interface ThemeContextType {
   theme: Theme;
-  toggleTheme: () => void;
+  setTheme: (theme: Theme) => void;
+  themes: Theme[];
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
+const themes: Theme[] = ['midnight', 'light', 'ocean', 'forest', 'sunset', 'lavender'];
+
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const theme: Theme = 'dark';
+  const [theme, setThemeState] = useState<Theme>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('portfolio-theme') as Theme;
+      if (saved && themes.includes(saved)) return saved;
+    }
+    return 'ocean';
+  });
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('portfolio-theme', theme);
   }, [theme]);
 
-  const toggleTheme = () => {};
+  const setTheme = (newTheme: Theme) => {
+    setThemeState(newTheme);
+  };
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme, setTheme, themes }}>
       {children}
     </ThemeContext.Provider>
   );

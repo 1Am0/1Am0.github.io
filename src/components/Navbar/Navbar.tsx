@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import ThemeSwitcher from '../ThemeSwitcher/ThemeSwitcher';
 import styles from './Navbar.module.css';
 
 const navLinks = [
@@ -20,7 +21,8 @@ export default function Navbar() {
     <nav className={styles.navbar}>
       <div className={styles.container}>
         <a href="#" className={styles.logo}>
-          Anthony Mokhov
+          <span className={styles.logoIcon}>AM</span>
+          <span className={styles.logoText}>Anthony Mokhov</span>
         </a>
 
         <ul className={`${styles.links} ${menuOpen ? styles.open : ''}`}>
@@ -34,12 +36,13 @@ export default function Navbar() {
         </ul>
 
         <div className={styles.actions}>
+          <ThemeSwitcher />
           <button
             className={styles.hamburger}
             onClick={() => setMenuOpen(prev => !prev)}
             aria-label="Toggle menu"
           >
-            {menuOpen ? '✕' : '☰'}
+            <span className={`${styles.hamburgerLine} ${menuOpen ? styles.hamburgerOpen : ''}`} />
           </button>
         </div>
       </div>

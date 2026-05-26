@@ -1,18 +1,20 @@
 .contact {
-  padding: 5rem 1.5rem;
+  padding: 6rem 1.5rem;
   background-color: var(--bg-secondary);
+  transition: background-color 0.3s ease;
 }
 
 .container {
-  max-width: 600px;
+  max-width: 560px;
   margin: 0 auto;
 }
 
 .heading {
-  font-size: 2rem;
+  font-size: 2.25rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
   text-align: center;
+  letter-spacing: -0.02em;
 }
 
 .subtitle {
@@ -31,61 +33,91 @@
 .field {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.5rem;
 }
 
 .label {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 600;
   color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
 
 .input,
 .textarea {
-  padding: 0.75rem 1rem;
+  padding: 0.875rem 1rem;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius);
   background-color: var(--bg-card);
   color: var(--text-primary);
   font-size: 0.95rem;
   outline: none;
-  transition: border-color 0.2s;
+  transition: all 0.2s ease;
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.6;
 }
 
 .input:focus,
 .textarea:focus {
   border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-subtle);
 }
 
 .textarea {
   resize: vertical;
+  min-height: 140px;
 }
 
 .submit {
-  background-color: var(--accent);
-  color: #ffffff;
+  background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+  color: var(--btn-text);
   border: none;
   border-radius: var(--radius);
-  padding: 0.85rem;
-  font-size: 1rem;
+  padding: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
+  margin-top: 0.5rem;
 }
 
 .submit:hover {
-  background-color: var(--accent-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow), var(--glow);
+}
+
+.submit:active {
+  transform: translateY(0);
 }
 
 .success {
-  margin-top: 1rem;
-  color: #10b981; /* green */
+  margin-top: 1.25rem;
+  padding: 1rem;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: var(--radius);
+  color: #10b981;
   font-weight: 600;
   text-align: center;
 }
 
 .error {
-  margin-top: 1rem;
-  color: #f87171; /* red */
+  margin-top: 1.25rem;
+  padding: 1rem;
+  background: rgba(248, 113, 113, 0.1);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  border-radius: var(--radius);
+  color: #f87171;
   font-weight: 600;
   text-align: center;
+}
+
+@media (max-width: 767px) {
+  .contact {
+    padding: 4rem 1.25rem;
+  }
 }

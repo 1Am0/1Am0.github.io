@@ -1,6 +1,7 @@
 .experience {
-  padding: 5rem 1.5rem;
+  padding: 6rem 1.5rem;
   background-color: var(--bg-secondary);
+  transition: background-color 0.3s ease;
 }
 
 .container {
@@ -9,21 +10,32 @@
 }
 
 .heading {
-  font-size: 2rem;
+  font-size: 2.25rem;
   font-weight: 700;
-  margin-bottom: 2.5rem;
+  margin-bottom: 3rem;
   text-align: center;
+  letter-spacing: -0.02em;
 }
 
 .timeline {
   position: relative;
   padding-left: 2rem;
-  border-left: 2px solid var(--border);
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.5rem;
+  bottom: 0.5rem;
+  width: 2px;
+  background: linear-gradient(180deg, var(--accent), var(--border));
+  border-radius: 2px;
 }
 
 .item {
   position: relative;
-  margin-bottom: 2.5rem;
+  margin-bottom: 2rem;
 }
 
 .item:last-child {
@@ -32,13 +44,15 @@
 
 .dot {
   position: absolute;
-  left: -2.6rem;
-  top: 0.25rem;
+  left: -2.55rem;
+  top: 0.35rem;
   width: 12px;
   height: 12px;
   border-radius: 50%;
   background-color: var(--accent);
   border: 3px solid var(--bg-secondary);
+  box-shadow: 0 0 0 2px var(--accent);
+  transition: all 0.3s ease;
 }
 
 .card {
@@ -47,12 +61,19 @@
   border-radius: var(--radius);
   padding: 1.5rem;
   box-shadow: var(--shadow);
+  transition: all 0.2s ease;
+}
+
+.card:hover {
+  border-color: var(--border-accent);
+  transform: translateX(4px);
 }
 
 .title {
   font-size: 1.15rem;
   font-weight: 700;
   margin-bottom: 0.25rem;
+  letter-spacing: -0.01em;
 }
 
 .company {
@@ -63,13 +84,32 @@
 }
 
 .period {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: var(--text-secondary);
   margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-weight: 500;
 }
 
 .desc {
   font-size: 0.95rem;
   color: var(--text-secondary);
-  line-height: 1.6;
+  line-height: 1.65;
+}
+
+@media (max-width: 767px) {
+  .experience {
+    padding: 4rem 1.25rem;
+  }
+
+  .timeline {
+    padding-left: 1.5rem;
+  }
+
+  .dot {
+    left: -2.05rem;
+    width: 10px;
+    height: 10px;
+  }
 }

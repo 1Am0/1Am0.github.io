@@ -17,27 +17,31 @@ const skillGroups = [
 
 const certifications = [
   {
-    id: '62212f49-92a3-4e48-9f71-7d2b0afa0cfe',
+    id: 'us-chess-expert',
     title: 'US Chess Expert',
     issuer: 'US Chess Federation',
     accent: '♟️',
+    link: 'https://www.uschess.org/',
   },
   {
-    id: '721a145f-805e-486a-b4a1-b34f11546546',
+    id: 'international-piano',
     title: 'International Piano Competitions',
     issuer: 'International Music Competition Boards',
     accent: '🎹',
+    link: null,
   },
   {
-    id: '70932542-e7f2-4a2d-91e9-d21d4feb4adf',
+    id: 'ap-scholar',
     title: 'AP Scholar with Distinction',
     issuer: 'College Board',
     accent: '🏅',
+    link: 'https://www.collegeboard.org/',
   },
   {
-    id: '010ae9ae-9edf-4365-aa7b-fcfdddcd6881',
+    id: 'java-programming',
     title: 'Java Programming Certification',
     accent: '☕',
+    link: 'https://www.credly.com/badges/010ae9ae-9edf-4365-aa7b-fcfdddcd6881/public_url',
   },
 ];
 
@@ -70,14 +74,16 @@ export default function Skills() {
               </span>
               <h3 className={styles.certificationTitle}>{cert.title}</h3>
               {cert.issuer && <p className={styles.certificationIssuer}>{cert.issuer}</p>}
-              <a
-                href={`https://www.credly.com/badges/${cert.id}/public_url`}
-                target="_blank"
-                rel="noreferrer"
-                className={styles.certificationLink}
-              >
-                View credential
-              </a>
+              {cert.link && (
+                <a
+                  href={cert.link}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={styles.certificationLink}
+                >
+                  View credential →
+                </a>
+              )}
             </article>
           ))}
         </div>

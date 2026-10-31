@@ -3,9 +3,11 @@
 interface Props {
   class?: string;
   zones?: boolean;
+  /** Render the framed area as a <figure>, so a <figcaption> inside it is valid HTML. */
+  as?: 'div' | 'figure';
 }
 
-const { class: className, zones = true } = Astro.props;
+const { class: className, zones = true, as: Inner = 'div' } = Astro.props;
 ---
 
 <div class:list={['sheet', className, { zoned: zones }]}>
@@ -21,9 +23,9 @@ const { class: className, zones = true } = Astro.props;
       </div>
     )
   }
-  <div class="inner">
+  <Inner class="inner">
     <slot />
-  </div>
+  </Inner>
 </div>
 
 <style>
@@ -39,6 +41,7 @@ const { class: className, zones = true } = Astro.props;
   }
   .inner {
     position: relative;
+    margin: 0;
     height: 100%;
     border: 1px solid var(--line);
   }

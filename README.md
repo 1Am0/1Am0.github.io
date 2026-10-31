@@ -107,6 +107,65 @@ model spins slowly while visible, and doesn't spin for visitors who have reduced
 `public/models/example-board.glb` is a sample used by the placeholder project; delete it once you have
 your own.
 
+## Click to zoom
+
+Every image on a project page can be opened full screen: the cover, every `Figure`, and plain Markdown
+images in the write-up. In the viewer, click the image (or press Z) to switch between "fit to screen" and actual
+size, "Original" opens the file in a new tab, and Esc closes it. Nothing to set up. For sharp zooming, export
+schematics and layouts at high resolution (2000 px wide or more, or 300 dpi from KiCad's Plot / Export).
+
+## Demo videos
+
+1. Record a short clip of the board working (5–15 s, landscape, steady). Phone video is fine.
+2. Shrink it to an MP4 under ~3 MB. With [HandBrake](https://handbrake.fr): preset "Web → Creator 720p",
+   tick "Web Optimized", untick audio. Or with ffmpeg:
+
+   ```bash
+   ffmpeg -i raw.mov -vf "scale=1280:-2" -c:v libx264 -crf 28 -preset slow -an -movflags +faststart demo.mp4
+   ```
+
+3. Put it in `public/videos/` and add it to the frontmatter:
+
+   ```yaml
+   video:
+     src: /videos/psu-load-test.mp4
+     alt: Output holding 5.00 V as the load steps from 0 to 2 A   # what the clip shows
+     caption: Load step test                                      # optional
+     poster: ../../assets/projects/bench-psu/video-poster.jpg     # optional first frame
+   ```
+
+   Or place one anywhere in the write-up (as many as you like):
+
+   ```mdx
+   import DemoVideo from '../../components/DemoVideo.astro';
+
+   <DemoVideo src="/videos/psu-load-test.mp4" alt="Output holding 5 V as the load steps" caption="Load step test" n={4} />
+   ```
+
+Clips loop silently while on screen, pause when scrolled away, and have a pause button. They don't autoplay for
+visitors with reduced motion turned on. For a longer video with sound (a walkthrough), add `controls: true`
+(or `controls` on the component) to get a normal player instead. YouTube links can go in `demo:` instead.
+
+## Design files
+
+List files people can download (schematic PDF, Gerbers, BOM, firmware, STEP) in a "Design files" box on the
+project page:
+
+```yaml
+downloads:
+  - label: Schematic
+    href: /files/bench-psu/schematic.pdf     # file in public/files/bench-psu/
+  - label: Gerber files
+    href: /files/bench-psu/gerbers.zip
+    note: Rev B, JLCPCB-ready
+  - label: Release v1.1
+    href: https://github.com/1Am0/bench-psu/releases/tag/v1.1   # full URLs work too
+```
+
+The file type and size are filled in automatically, and the build fails with a clear message if a file is
+missing, so you can't ship a broken link. Keep large or frequently-changing files in GitHub Releases and link
+to them instead.
+
 ## Pages
 
 | Path | Source |

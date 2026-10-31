@@ -1,11 +1,12 @@
 ---
-// Framed figure with a drawing-style caption. Use in project MDX:
+// Framed figure with a drawing-style caption. Click it to open the full-size image. Use in project MDX:
 //   import Figure from '../../components/Figure.astro';
 //   import schematic from '../../assets/projects/<slug>/schematic.png';
 //   <Figure src={schematic} alt="Main board schematic" n={2} caption="Schematic / power stage" />
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 import Sheet from './Sheet.astro';
+import ZoomLink from './ZoomLink.astro';
 
 interface Props {
   src: ImageMetadata;
@@ -15,16 +16,19 @@ interface Props {
 }
 
 const { src, alt, caption, n } = Astro.props;
+const label = `${n !== undefined ? `Fig. ${String(n).padStart(2, '0')} — ` : ''}${caption}`;
 ---
 
-<figure class="figure">
-  <Sheet zones={false}>
-    <Image src={src} alt={alt} widths={[720, 1080, 1600]} sizes="(max-width: 860px) 100vw, 820px" />
+<div class="figure">
+  <Sheet zones={false} as="figure">
+    <ZoomLink src={src} caption={label}>
+      <Image src={src} alt={alt} widths={[720, 1080, 1600]} sizes="(max-width: 860px) 100vw, 820px" />
+    </ZoomLink>
     <figcaption class="mono-label">
-      <span>{n !== undefined && <>Fig. {String(n).padStart(2, '0')} — </>}{caption}</span>
+      <span>{label}</span>
     </figcaption>
   </Sheet>
-</figure>
+</div>
 
 <style>
   .figure {

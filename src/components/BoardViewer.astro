@@ -24,8 +24,8 @@ const { src, alt, caption = '3D board model', n, poster, orbit = '30deg 55deg au
 const posterSrc = typeof poster === 'string' ? poster : poster?.src;
 ---
 
-<figure class="board" data-board data-orbit={orbit}>
-  <Sheet zones={false}>
+<div class="board" data-board data-orbit={orbit}>
+  <Sheet zones={false} as="figure">
     <div class="stage">
       <model-viewer
         src={src}
@@ -71,7 +71,7 @@ const posterSrc = typeof poster === 'string' ? poster : poster?.src;
       <span class="hint">Drag to rotate · Scroll to zoom</span>
     </figcaption>
   </Sheet>
-</figure>
+</div>
 
 <script>
   type Viewer = HTMLElement & {

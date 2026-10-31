@@ -1,0 +1,128 @@
+---
+// "Design files" list on a project page, from the `downloads:` frontmatter field.
+// Local files (paths under public/, e.g. /files/bench-psu/schematic.pdf) get their size and type filled in at
+// build time and download directly; full URLs (a GitHub release, OSH Park, etc.) open in a new tab.
+import { statSync } from 'node:fs';
+import { join } from 'node:path';
+
+interface Props {
+  files: { label: string; href: string; note?: string }[];
+}
+
+const { files } = Astro.props;
+// Builds run from the project root, so public/ is relative to the working directory.
+const publicDir = join(process.cwd(), 'public');
+
+const formatSize = (bytes: number) =>
+  bytes < 1024 ** 2 ? `${Math.max(1, Math.round(bytes / 1024))} KB` : `${(bytes / 1024 ** 2).toFixed(1)} MB`;
+
+const rows = files.map((file) => {
+  const external = /^https?:\/\//.test(file.href);
+  const path = file.href.split(/[?#]/)[0];
+  const ext = external ? '' : (path.match(/\.([a-z0-9]+)$/i)?.[1] ?? '').toUpperCase();
+  let size: string | undefined;
+  if (!external) {
+    try {
+      size = formatSize(statSync(join(publicDir, decodeURI(path))).size);
+    } catch {
+      throw new Error(`downloads: "${file.href}" was not found in public/. Check the path in the project's frontmatter.`);
+    }
+  }
+  return { ...file, external, type: external ? 'Link' : ext || 'File', size };
+});
+---
+
+<section class="downloads" aria-labelledby="downloads-title">
+  <h2 id="downloads-title" class="mono-label">Design files</h2>
+  <ul>
+    {
+      rows.map((f) => (
+        <li>
+          <a href={f.href} {...(f.external ? { rel: 'noreferrer', target: '_blank' } : { download: '' })}>
+            <span class="type mono-label">{f.type}</span>
+            <span class="text">
+              <span class="label">{f.label}</span>
+              {(f.note || f.size) && (
+                <span class="meta">{[f.note, f.size].filter(Boolean).join(' · ')}</span>
+              )}
+            </span>
+            <span class="icon" aria-hidden="true">{f.external ? '↗' : '↓'}</span>
+            {f.external && <span class="sr-only">(opens in a new tab)</span>}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .downloads {
+    max-width: 720px;
+    margin: 2rem 0 2.5rem;
+  }
+  h2 {
+    margin: 0;
+    padding: 0.45rem 0.6rem;
+    border: 1px solid var(--line);
+    border-bottom: 0;
+    font-size: 0.7rem;
+    font-weight: 400;
+  }
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--line);
+  }
+  li + li {
+    border-top: 1px solid var(--line);
+  }
+  a {
+    display: grid;
+    grid-template-columns: 3.25rem minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.75rem;
+    height: 100%;
+    padding: 0.6rem 0.75rem 0.6rem 0.6rem;
+    color: var(--text);
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+  a:hover {
+    background: var(--surface-2);
+  }
+  a:hover .label,
+  a:hover .icon {
+    color: var(--accent);
+  }
+  a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+  }
+  .type {
+    display: grid;
+    place-items: center;
+    height: 2rem;
+    border: 1px solid var(--line);
+    color: var(--accent);
+    font-size: 0.66rem;
+  }
+  .text {
+    display: grid;
+    gap: 0.1rem;
+  }
+  .label {
+    font-weight: 600;
+    font-size: 0.92rem;
+    line-height: 1.3;
+  }
+  .meta {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    color: var(--text-muted);
+  }
+  .icon {
+    font-family: var(--font-mono);
+    color: var(--text-muted);
+  }
+</style>

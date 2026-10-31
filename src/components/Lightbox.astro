@@ -1,0 +1,208 @@
+---
+// Full-screen image viewer for project pages. Included once per page; it opens for:
+//   - links marked `data-zoom` (Figure and the cover image use these; without JS they open the full-size file)
+//   - plain Markdown images inside `.prose`
+// Click the image (or press Z) to switch between "fit to screen" and actual size; Esc or ✕ closes it.
+---
+
+<dialog class="lightbox" aria-label="Image viewer">
+  <div class="bar">
+    <p class="mono-label caption"></p>
+    <div class="tools">
+      <button type="button" class="size mono-label" aria-pressed="false">Actual size</button>
+      <a class="original mono-label ext" href="#">Original</a>
+      <button type="button" class="close" aria-label="Close image viewer">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15"></path></svg>
+      </button>
+    </div>
+  </div>
+  <div class="view"></div>
+</dialog>
+
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>('dialog.lightbox')!;
+  const view = dialog.querySelector<HTMLElement>('.view')!;
+  const img = view.appendChild(document.createElement('img'));
+  const caption = dialog.querySelector<HTMLElement>('.caption')!;
+  const sizeBtn = dialog.querySelector<HTMLButtonElement>('.size')!;
+  const original = dialog.querySelector<HTMLAnchorElement>('.original')!;
+  original.target = '_blank';
+  original.rel = 'noreferrer';
+
+  const setActual = (on: boolean) => {
+    dialog.classList.toggle('actual', on);
+    sizeBtn.setAttribute('aria-pressed', String(on));
+    sizeBtn.textContent = on ? 'Fit to screen' : 'Actual size';
+  };
+
+  const open = (src: string, alt: string, text: string) => {
+    setActual(false);
+    img.src = src;
+    img.alt = alt;
+    caption.textContent = text || alt;
+    original.href = src;
+    dialog.showModal();
+    view.scrollTo(0, 0);
+  };
+
+  // Figures and the cover: links to the full-size file.
+  for (const link of document.querySelectorAll<HTMLAnchorElement>('a[data-zoom]')) {
+    link.addEventListener('click', (e) => {
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return; // let "open in new tab" work
+      e.preventDefault();
+      const thumb = link.querySelector('img');
+      open(link.href, thumb?.alt ?? '', link.dataset.caption ?? '');
+    });
+  }
+
+  // Plain Markdown images in the write-up.
+  for (const thumb of document.querySelectorAll<HTMLImageElement>('.prose img')) {
+    if (thumb.closest('a, [data-board], figure')) continue;
+    thumb.classList.add('zoomable');
+    thumb.tabIndex = 0;
+    thumb.setAttribute('role', 'button');
+    thumb.setAttribute('aria-label', `${thumb.alt || 'Image'}: open full size`);
+    const show = () => open(thumb.currentSrc || thumb.src, thumb.alt, '');
+    thumb.addEventListener('click', show);
+    thumb.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        show();
+      }
+    });
+  }
+
+  img.addEventListener('click', () => setActual(!dialog.classList.contains('actual')));
+  sizeBtn.addEventListener('click', () => setActual(!dialog.classList.contains('actual')));
+  dialog.querySelector('.close')!.addEventListener('click', () => dialog.close());
+  dialog.addEventListener('keydown', (e) => {
+    if (e.key === 'z' || e.key === 'Z') setActual(!dialog.classList.contains('actual'));
+  });
+  // Click on the dark area around the image closes it.
+  view.addEventListener('click', (e) => {
+    if (e.target === view) dialog.close();
+  });
+  dialog.addEventListener('close', () => img.removeAttribute('src'));
+</script>
+
+<style>
+  .lightbox {
+    width: 100vw;
+    height: 100dvh;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: #0d0f12;
+    color: #e8e9ec;
+    overflow: hidden;
+  }
+  .lightbox[open] {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .lightbox::backdrop {
+    background: transparent;
+  }
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.6rem 0.75rem 0.6rem 1rem;
+    border-bottom: 1px solid rgb(255 255 255 / 0.12);
+  }
+  .caption {
+    min-width: 0;
+    margin: 0;
+    color: #c4c8cf;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .tools {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+  .tools > * {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.25rem;
+    padding: 0 0.75rem;
+    border: 1px solid rgb(255 255 255 / 0.22);
+    background: transparent;
+    color: #e8e9ec;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .tools > *:hover {
+    border-color: #e8894e;
+    color: #f3a372;
+  }
+  .tools > *:focus-visible {
+    outline: 2px solid #e8894e;
+    outline-offset: 2px;
+  }
+  .close {
+    width: 2.25rem;
+    padding: 0;
+  }
+  .close svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+  }
+  .view {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    padding: 1rem;
+  }
+  .view :global(img) {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    background: #fff;
+    cursor: zoom-in;
+  }
+  .actual .view {
+    display: block;
+    overflow: auto;
+  }
+  .actual .view :global(img) {
+    display: block;
+    max-width: none;
+    max-height: none;
+    margin: 0 auto;
+    cursor: zoom-out;
+  }
+  @media (max-width: 600px) {
+    .size {
+      display: none !important;
+    }
+    .view {
+      padding: 0.5rem;
+    }
+  }
+  /* Thumbnails on the page. */
+  :global(.prose img.zoomable),
+  :global(a[data-zoom]) {
+    cursor: zoom-in;
+  }
+  :global(.prose img.zoomable:focus-visible) {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+</style>

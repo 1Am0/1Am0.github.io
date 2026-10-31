@@ -34,6 +34,29 @@ const projects = defineCollection({
           orbit: z.string().optional(),
         })
         .optional(),
+      // Demo clip shown under the media on the project page. `src` is an .mp4/.webm under public/.
+      video: z
+        .object({
+          src: z.string().regex(/\.(mp4|webm)$/i, 'video.src must point to an .mp4 or .webm file'),
+          alt: z.string(),
+          caption: z.string().optional(),
+          poster: image().optional(),
+          controls: z.boolean().optional(),
+        })
+        .optional(),
+      // "Design files" row: schematic PDF, Gerbers, BOM, CAD… Local paths are under public/, e.g.
+      // /files/<slug>/schematic.pdf; full URLs (GitHub releases etc.) also work.
+      downloads: z
+        .array(
+          z.object({
+            label: z.string(),
+            href: z.string().refine((h) => h.startsWith('/') || /^https?:\/\//.test(h), {
+              message: 'downloads.href must start with / (a file in public/) or be a full https:// URL',
+            }),
+            note: z.string().optional(),
+          }),
+        )
+        .default([]),
       repo: z.url().optional(),
       demo: z.url().optional(),
     }),

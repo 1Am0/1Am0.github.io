@@ -1,0 +1,205 @@
+---
+// Demo clip in a drawing-sheet frame. Put the file in public/videos/, then use it from project
+// frontmatter (`video:`) or directly in MDX:
+//   import DemoVideo from '../../components/DemoVideo.astro';
+//   <DemoVideo src="/videos/psu-load-test.mp4" alt="Output holding 5 V as the load steps" caption="Load step test" n={4} />
+// Short silent clips (the default) loop muted while on screen, with a pause button. Pass `controls` for a
+// longer video with sound: it gets the normal player controls and never plays on its own.
+import type { ImageMetadata } from 'astro';
+import Sheet from './Sheet.astro';
+
+interface Props {
+  /** Path to an .mp4 (H.264) or .webm under public/, e.g. "/videos/demo.mp4". */
+  src: string;
+  /** What the clip shows, for people who can't see it. Shown next to the caption. */
+  alt: string;
+  caption?: string;
+  n?: number;
+  /** Still frame shown before the clip loads. Recommended; without it the first frame is used. */
+  poster?: ImageMetadata | string;
+  /** Normal player with sound and controls instead of a silent loop. */
+  controls?: boolean;
+}
+
+const { src, alt, caption = 'Demo', n, poster, controls = false } = Astro.props;
+const posterSrc = typeof poster === 'string' ? poster : poster?.src;
+const type = src.toLowerCase().endsWith('.webm') ? 'video/webm' : 'video/mp4';
+---
+
+<div class="demo" data-demo={controls ? 'player' : 'loop'}>
+  <Sheet zones={false} as="figure">
+    <div class="stage">
+      <video
+        poster={posterSrc}
+        preload={posterSrc ? 'none' : 'metadata'}
+        playsinline
+        muted={!controls}
+        loop={!controls}
+        controls={controls}
+      >
+        <source src={posterSrc ? undefined : `${src}#t=0.001`} data-src={src} type={type} />
+        <a href={src}>Download the video</a>
+      </video>
+      {
+        !controls && (
+          <button type="button" class="toggle" aria-pressed="false" aria-label="Play video" hidden>
+            <svg class="pause" viewBox="0 0 20 20" aria-hidden="true"><path d="M7 5v10M13 5v10"></path></svg>
+            <svg class="play" viewBox="0 0 20 20" aria-hidden="true"><path d="M7 5l8 5-8 5z"></path></svg>
+          </button>
+        )
+      }
+    </div>
+    <figcaption class="mono-label">
+      <span>{n !== undefined && <>Fig. {String(n).padStart(2, '0')} — </>}{caption}</span>
+      <span class="desc">{alt}</span>
+    </figcaption>
+  </Sheet>
+</div>
+
+<script>
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+
+  for (const figure of document.querySelectorAll<HTMLElement>('[data-demo]')) {
+    const video = figure.querySelector('video')!;
+    const source = video.querySelector('source')!;
+    const load = () => {
+      if (source.getAttribute('src')) return;
+      source.src = source.dataset.src!;
+      video.load();
+    };
+
+    if (figure.dataset.demo === 'player') {
+      // Normal player: fetch the file only once it's near the screen.
+      const io = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting) {
+            load();
+            io.disconnect();
+          }
+        },
+        { rootMargin: '300px 0px' },
+      );
+      io.observe(figure);
+      continue;
+    }
+
+    // Silent loop: plays while visible unless the visitor paused it or prefers reduced motion.
+    const toggle = figure.querySelector<HTMLButtonElement>('.toggle')!;
+    let wanted = !reducedMotion.matches;
+    let visible = false;
+    toggle.hidden = false;
+
+    const sync = () => {
+      if (wanted && visible && !document.hidden) {
+        load();
+        video.play().catch(() => {});
+      } else {
+        video.pause();
+      }
+      toggle.setAttribute('aria-pressed', String(wanted));
+      toggle.setAttribute('aria-label', wanted ? 'Pause video' : 'Play video');
+    };
+
+    toggle.addEventListener('click', () => {
+      wanted = !wanted;
+      sync();
+    });
+    video.addEventListener('click', () => {
+      wanted = !wanted;
+      sync();
+    });
+    new IntersectionObserver(
+      (entries) => {
+        visible = entries[0].isIntersecting;
+        if (visible) load();
+        sync();
+      },
+      { rootMargin: '100px 0px' },
+    ).observe(figure);
+    document.addEventListener('visibilitychange', sync);
+    reducedMotion.addEventListener('change', () => {
+      wanted = !reducedMotion.matches;
+      sync();
+    });
+  }
+</script>
+
+<style>
+  .demo {
+    margin: 2rem 0;
+  }
+  .stage {
+    position: relative;
+    background: var(--surface-2);
+  }
+  video {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: contain;
+    background: var(--surface);
+  }
+  [data-demo='loop'] video {
+    cursor: pointer;
+  }
+  .toggle {
+    position: absolute;
+    right: 0.6rem;
+    bottom: 0.6rem;
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+  }
+  .toggle[hidden] {
+    display: none;
+  }
+  .toggle:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+  .toggle svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .toggle .pause,
+  .toggle[aria-pressed='false'] .play {
+    display: block;
+  }
+  .toggle .play,
+  .toggle[aria-pressed='false'] .pause {
+    display: none;
+  }
+  figcaption {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.6rem 0.75rem;
+    border-top: 1px solid var(--line);
+  }
+  .desc {
+    text-transform: none;
+    letter-spacing: 0;
+    text-align: right;
+  }
+  @media (max-width: 600px) {
+    figcaption {
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    .desc {
+      text-align: left;
+    }
+  }
+</style>

@@ -16,7 +16,22 @@ tags: [Microcontroller, KiCad, Sensors]
 model:
   src: /models/example-board.glb
   caption: Sample board / interactive 3D
+# Sample demo clip; replace with a short video of your board working (see README → Demo videos).
+video:
+  src: /videos/example-board-spin.mp4
+  alt: The sample board rotating on a turntable
+  caption: Sample demo clip
+# Sample "Design files" row; list your schematic PDF, Gerbers, BOM, etc. (see README → Design files).
+downloads:
+  - label: 3D board model
+    href: /models/example-board.glb
+    note: Sample file
+  - label: Demo clip
+    href: /videos/example-board-spin.mp4
 ---
+
+import Figure from '../../components/Figure.astro';
+import sampleSchematic from '../../assets/projects/hardware-project-1/sample-schematic.png';
 
 {/* PLACEHOLDER: replace every section below with the real write-up. Delete sections that don't apply. */}
 
@@ -39,6 +54,8 @@ Block diagram of the major subsystems (power, MCU, sensors, outputs) and how the
 Schematic and board renders or photos. Call out key choices: regulator selection, decoupling, protection,
 trace widths.
 
+<Figure src={sampleSchematic} alt="Sample RC low-pass filter schematic" n={3} caption="Sample schematic / click to zoom" />
+
 ## Bill of materials
 
 | Ref | Part | Value / Package | Qty | Notes |
@@ -52,6 +69,10 @@ Language, structure, and the interesting parts (interrupts, state machine, drive
 ## Testing & results
 
 Measurements: current draw, scope captures, accuracy against a reference. What worked and what didn't.
+
+Plain Markdown images can be zoomed too:
+
+![Sample schematic as a plain Markdown image](../../assets/projects/hardware-project-1/sample-schematic.png)
 
 ## Next revision
 

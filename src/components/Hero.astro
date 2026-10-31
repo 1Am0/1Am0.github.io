@@ -1,0 +1,170 @@
+---
+import { site } from '../data/site';
+---
+
+<section class="hero">
+  <div class="container hero-inner">
+    <div class="copy">
+      <p class="eyebrow">{site.school} · {site.location}</p>
+      <h1>{site.name}</h1>
+      <p class="role">Aspiring electrical engineer</p>
+      <p class="tagline">
+        {site.tagline} I design and build small electronic systems, then write the code that brings them to life.
+      </p>
+      <div class="actions">
+        <a class="btn btn-primary" href="#projects">View projects</a>
+        {site.resume && <a class="btn" href={site.resume}>Résumé (PDF)</a>}
+        <a class="btn" href={site.github} rel="noreferrer">GitHub</a>
+        <a class="btn" href={site.linkedin} rel="noreferrer">LinkedIn</a>
+      </div>
+    </div>
+
+    <figure class="schematic" aria-hidden="true">
+      <svg viewBox="0 0 320 200" role="presentation">
+        <g class="wire">
+          <path d="M20 60 H80"></path>
+          <path d="M140 60 H200 V80"></path>
+          <path d="M200 120 V160 H20"></path>
+          <path d="M200 60 H300"></path>
+          <path d="M200 160 H300"></path>
+        </g>
+        <path class="part" d="M80 60 l6 -10 l12 20 l12 -20 l12 20 l12 -20 l6 10"></path>
+        <g class="part">
+          <path d="M184 92 H216 M184 104 H216"></path>
+          <path d="M200 80 V92 M200 104 V120"></path>
+        </g>
+        <circle class="node" cx="200" cy="60" r="3.5"></circle>
+        <circle class="node" cx="200" cy="160" r="3.5"></circle>
+        <circle class="term" cx="20" cy="60" r="4"></circle>
+        <circle class="term" cx="20" cy="160" r="4"></circle>
+        <circle class="term" cx="300" cy="60" r="4"></circle>
+        <circle class="term" cx="300" cy="160" r="4"></circle>
+        <text x="110" y="40">R1 10k</text>
+        <text x="224" y="102">C1 100n</text>
+        <text x="8" y="44">VIN</text>
+        <text x="312" y="44" text-anchor="end">VOUT</text>
+        <text x="8" y="184">GND</text>
+        <path class="pulse" d="M20 60 H80 l6 -10 l12 20 l12 -20 l12 20 l12 -20 l6 10 H300"></path>
+      </svg>
+      <figcaption>fc = 1 / (2πRC) ≈ 159 Hz</figcaption>
+    </figure>
+  </div>
+</section>
+
+<style>
+  .hero {
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 24px 24px;
+    padding-block: 4.5rem 5rem;
+  }
+  .hero-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    gap: 3rem;
+    align-items: center;
+  }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin: 0 0 1rem;
+  }
+  h1 {
+    font-size: clamp(2.4rem, 6vw, 3.6rem);
+    letter-spacing: -0.03em;
+  }
+  .role {
+    font-size: clamp(1.15rem, 2.4vw, 1.4rem);
+    font-weight: 600;
+    color: var(--accent);
+    margin: 0.5rem 0 1rem;
+  }
+  .tagline {
+    color: var(--text-muted);
+    font-size: 1.05rem;
+    max-width: 34rem;
+    margin: 0 0 2rem;
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+  .schematic {
+    margin: 0;
+    padding: 1.25rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+  svg {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+  .wire,
+  .part {
+    fill: none;
+    stroke: var(--text);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .part {
+    stroke: var(--accent);
+  }
+  .node {
+    fill: var(--text);
+  }
+  .term {
+    fill: var(--surface);
+    stroke: var(--text);
+    stroke-width: 2;
+  }
+  text {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    fill: var(--text-muted);
+  }
+  .pulse {
+    fill: none;
+    stroke: var(--trace);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-dasharray: 18 400;
+    animation: flow 3.2s linear infinite;
+  }
+  figcaption {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    border-top: 1px dashed var(--border);
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+  }
+  @keyframes flow {
+    from {
+      stroke-dashoffset: 18;
+    }
+    to {
+      stroke-dashoffset: -400;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pulse {
+      display: none;
+    }
+  }
+  @media (max-width: 820px) {
+    .hero {
+      padding-block: 3rem 3.5rem;
+    }
+    .hero-inner {
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+    }
+  }
+</style>

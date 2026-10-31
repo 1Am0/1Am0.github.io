@@ -1,0 +1,53 @@
+export const site = {
+  name: 'Anthony Mokhov',
+  title: 'Anthony Mokhov — Electrical Engineering Portfolio',
+  description:
+    'Electrical engineering portfolio of Anthony Mokhov: embedded systems, circuit design, and the software that drives them.',
+  tagline: 'Embedded systems, circuit design, and the software that drives them.',
+  location: 'San Diego, CA',
+  school: 'Patrick Henry High School',
+  email: 'anthony.mokhov@gmail.com',
+  github: 'https://github.com/1Am0',
+  linkedin: 'https://www.linkedin.com/in/anthony-mokhov',
+  // Set to '/resume.pdf' once the file is added to public/.
+  resume: null as string | null,
+};
+
+// TODO(Anthony): confirm the Hardware and Embedded entries match what you've actually used.
+export const skillGroups = [
+  { name: 'Hardware', items: ['Circuit analysis', 'PCB layout', 'Soldering & rework', 'Multimeter & oscilloscope'] },
+  { name: 'Embedded', items: ['C / C++', 'Arduino', 'Microcontroller peripherals', 'Serial protocols'] },
+  { name: 'Software', items: ['Python', 'Java', 'TypeScript / JavaScript', 'SQL'] },
+  { name: 'Tools', items: ['Git & GitHub', 'React / Next.js', 'Vite', 'REST APIs'] },
+];
+
+export const experience = [
+  {
+    role: 'SAT Math Tutor',
+    org: 'Schoolhouse & College Board',
+    period: 'Present',
+    detail: 'Tutor high school students for the SAT math section through nonprofit programs.',
+  },
+  {
+    role: 'Tournament Assistant',
+    org: 'San Diego Chess Club',
+    period: '2024 – Present',
+    detail: 'Help run monthly scholastic tournaments of 100+ players: pairings, registration, and rules disputes.',
+  },
+  {
+    role: 'Volunteer Math Tutor',
+    org: 'Thinkist',
+    period: '2025',
+    detail: 'Taught weekly middle-school math sessions after formal tutor training; 50+ volunteer hours.',
+  },
+];
+
+export const awards = [
+  { name: 'AP Scholar with Distinction', issuer: 'College Board', url: null },
+  {
+    name: 'Java Programming',
+    issuer: 'Credly certification',
+    url: 'https://www.credly.com/badges/010ae9ae-9edf-4365-aa7b-fcfdddcd6881/public_url',
+  },
+  { name: 'US Chess Expert', issuer: 'US Chess Federation', url: null },
+];

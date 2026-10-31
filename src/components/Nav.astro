@@ -1,0 +1,186 @@
+---
+import { site } from '../data/site';
+
+const base = Astro.url.pathname === '/' ? '' : '/';
+const links = [
+  { label: 'Projects', href: `${base}#projects` },
+  { label: 'Skills', href: `${base}#skills` },
+  { label: 'Experience', href: `${base}#experience` },
+  { label: 'About', href: `${base}#about` },
+  { label: 'Contact', href: `${base}#contact` },
+];
+---
+
+<header class="nav">
+  <div class="container nav-inner">
+    <a class="logo" href="/">
+      <span class="logo-mark" aria-hidden="true">AM</span>
+      <span class="logo-name">{site.name}</span>
+    </a>
+    <nav aria-label="Primary">
+      <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links">
+        <span class="sr-only">Menu</span>
+        <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
+          <path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path>
+        </svg>
+      </button>
+      <ul id="nav-links" class="links">
+        {links.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+        {site.resume && <li><a class="resume" href={site.resume}>Résumé</a></li>}
+      </ul>
+    </nav>
+    <button class="theme-btn" type="button" aria-label="Toggle color theme">
+      <svg class="sun" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"></circle>
+        <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+      </svg>
+      <svg class="moon" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"></path>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<script>
+  const root = document.documentElement;
+  const isDark = () =>
+    root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+
+  document.querySelector('.theme-btn')?.addEventListener('click', () => {
+    const next = isDark() ? 'light' : 'dark';
+    root.dataset.theme = next;
+    try {
+      localStorage.setItem('theme', next);
+    } catch {}
+  });
+
+  const menuBtn = document.querySelector<HTMLButtonElement>('.menu-btn');
+  const links = document.getElementById('nav-links');
+  const setOpen = (open: boolean) => {
+    menuBtn?.setAttribute('aria-expanded', String(open));
+    links?.classList.toggle('open', open);
+  };
+  menuBtn?.addEventListener('click', () => setOpen(menuBtn.getAttribute('aria-expanded') !== 'true'));
+  links?.addEventListener('click', (e) => {
+    if ((e.target as HTMLElement).closest('a')) setOpen(false);
+  });
+</script>
+
+<style>
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-inner {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    height: 3.75rem;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 600;
+    margin-right: auto;
+  }
+  .logo-mark {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    padding: 0.3rem 0.4rem;
+    border: 1.5px solid var(--accent);
+    color: var(--accent);
+    border-radius: 4px;
+  }
+  .links {
+    display: flex;
+    gap: 1.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.92rem;
+    font-weight: 500;
+  }
+  .links a:hover {
+    color: var(--text);
+  }
+  .links .resume {
+    color: var(--accent);
+  }
+  .menu-btn,
+  .theme-btn {
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--text-muted);
+    cursor: pointer;
+  }
+  .menu-btn:hover,
+  .theme-btn:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+  .menu-btn {
+    display: none;
+  }
+  .moon {
+    display: none;
+  }
+  :global(:root[data-theme='dark']) .sun {
+    display: none;
+  }
+  :global(:root[data-theme='dark']) .moon {
+    display: block;
+  }
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme='light'])) .sun {
+      display: none;
+    }
+    :global(:root:not([data-theme='light'])) .moon {
+      display: block;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .logo-name {
+      display: none;
+    }
+    .menu-btn {
+      display: grid;
+    }
+    .links {
+      display: none;
+      position: absolute;
+      top: 3.75rem;
+      left: 0;
+      right: 0;
+      flex-direction: column;
+      gap: 0;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      padding: 0.5rem 1rem 1rem;
+    }
+    .links.open {
+      display: flex;
+    }
+    .links a {
+      display: block;
+      padding: 0.7rem 0;
+      font-size: 1rem;
+    }
+  }
+</style>

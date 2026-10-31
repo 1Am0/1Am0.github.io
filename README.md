@@ -1,106 +1,56 @@
-# Digital Portfolio
+# Anthony Mokhov — Portfolio
 
-Professional portfolio website built with React, TypeScript, and Vite. The project includes a responsive single-page layout, theme switching, and a working contact form powered by EmailJS.
+Electrical engineering portfolio, live at **https://1am0.github.io**.
 
-## Overview
+Built with [Astro](https://astro.build) + MDX. The site is fully static: pages ship as plain HTML,
+and each project is a Markdown file.
 
-This repository is designed as a production-ready personal portfolio template. It provides clear component separation, maintainable styling with CSS Modules, and a straightforward configuration path for deployment.
-
-## Core Features
-
-- React 19 with TypeScript for type-safe, component-based development
-- Vite for fast development and optimized builds
-- CSS Modules for scoped styles
-- Light and dark theme support with saved user preference
-- Responsive layout for mobile and desktop
-- Contact form with real email delivery through EmailJS
-
-## Tech Stack
-
-- React
-- TypeScript
-- Vite
-- CSS Modules
-- EmailJS
-
-## Quick Start
+## Develop
 
 ```bash
 npm install
-npm run dev
+npm run dev       # http://localhost:4321 (drafts visible)
+npm run build     # type-check + production build into dist/ (drafts hidden)
+npm run preview   # serve the production build
 ```
 
-## Available Scripts
+Pushing to `main` deploys automatically through `.github/workflows/deploy.yml`.
+In the repo settings, **Pages → Source** must be set to **GitHub Actions**.
 
-```bash
-npm run dev
-npm run build
-npm run preview
-npm run lint
-npm run deploy
-```
+## Add or edit a project
 
-## Contact Form Configuration (EmailJS)
+1. Create `src/content/projects/<slug>.mdx`. The slug becomes the URL `/projects/<slug>/`.
+2. Fill in the frontmatter (the schema is in `src/content.config.ts`):
 
-To enable live email delivery from the contact form:
+   ```yaml
+   ---
+   title: Bench Power Supply
+   summary: One sentence shown on the card.
+   category: hardware        # or: software
+   order: 1                  # lower = earlier
+   featured: true
+   draft: false              # true = only visible in `npm run dev`
+   date: 2026-05-01
+   tags: [STM32, KiCad, Buck converter]
+   cover: ../../assets/projects/bench-psu/cover.jpg
+   coverAlt: Assembled PCB on the bench
+   repo: https://github.com/1Am0/bench-psu
+   ---
+   ```
 
-1. Create an EmailJS account at https://www.emailjs.com/.
-2. Add an email service in EmailJS.
-3. Create an EmailJS template.
-4. Add the following environment variables to `.env` in the project root.
+3. Put images in `src/assets/projects/<slug>/` and reference them with relative paths in Markdown,
+   e.g. `![Schematic](../../assets/projects/bench-psu/schematic.png)`. Astro optimizes them at build time.
+4. `src/content/projects/hardware-project-1.mdx` contains the recommended write-up sections
+   (requirements → system design → schematic/PCB → BOM → firmware → testing → next revision).
 
-```env
-VITE_EMAILJS_SERVICE_ID=your_service_id
-VITE_EMAILJS_TEMPLATE_ID=your_template_id
-VITE_EMAILJS_PUBLIC_KEY=your_public_key
-```
+## Edit other content
 
-5. Restart the development server after changing `.env` values.
+- Name, links, résumé path: `src/data/site.ts`
+- Skills, experience, awards: `src/data/site.ts`
+- About text and section layout: `src/pages/index.astro`
+- Colors and fonts: `src/styles/global.css`
 
-### Template Variables
+## Résumé
 
-The contact form sends these parameters to EmailJS:
-
-- `name`
-- `email`
-- `message`
-- `title`
-- `time`
-- `from_name`
-- `from_email`
-
-Using both naming styles allows compatibility with common EmailJS template conventions.
-
-## Project Structure
-
-```text
-src/
-	components/
-		About/
-		Contact/
-		Experience/
-		Footer/
-		Hero/
-		Navbar/
-		Projects/
-		Skills/
-	context/
-		ThemeContext.tsx
-	App.tsx
-	App.module.css
-	index.css
-	main.tsx
-```
-
-## Deployment
-
-This project includes GitHub Pages deployment support through the `gh-pages` package.
-
-```bash
-npm run build
-npm run deploy
-```
-
-## License
-
-This project is available for personal use and customization.
+Drop the PDF in `public/resume.pdf` and set `resume: '/resume.pdf'` in `src/data/site.ts`.
+The résumé buttons in the nav and hero appear automatically.

@@ -5,28 +5,36 @@ interface Props {
   zones?: boolean;
   /** Render the framed area as a <figure>, so a <figcaption> inside it is valid HTML. */
   as?: 'div' | 'figure';
+  /** No frame at all: just the content, for when the component sits inside another sheet. */
+  bare?: boolean;
 }
 
-const { class: className, zones = true, as: Inner = 'div' } = Astro.props;
+const { class: className, zones = true, as: Inner = 'div', bare = false } = Astro.props;
 ---
 
-<div class:list={['sheet', className, { zoned: zones }]}>
-  {
-    zones && (
-      <div class="zones" aria-hidden="true">
-        <span class="z top">
-          <i>1</i><i>2</i><i>3</i><i>4</i>
-        </span>
-        <span class="z left">
-          <i>A</i><i>B</i><i>C</i>
-        </span>
-      </div>
-    )
-  }
-  <Inner class="inner">
-    <slot />
-  </Inner>
-</div>
+{
+  bare ? (
+    <Inner class:list={['inner', 'bare', className]}>
+      <slot />
+    </Inner>
+  ) : (
+    <div class:list={['sheet', className, { zoned: zones }]}>
+      {zones && (
+        <div class="zones" aria-hidden="true">
+          <span class="z top">
+            <i>1</i><i>2</i><i>3</i><i>4</i>
+          </span>
+          <span class="z left">
+            <i>A</i><i>B</i><i>C</i>
+          </span>
+        </div>
+      )}
+      <Inner class="inner">
+        <slot />
+      </Inner>
+    </div>
+  )
+}
 
 <style>
   .sheet {
@@ -44,6 +52,9 @@ const { class: className, zones = true, as: Inner = 'div' } = Astro.props;
     margin: 0;
     height: 100%;
     border: 1px solid var(--line);
+  }
+  .inner.bare {
+    border: 0;
   }
   .zones {
     position: absolute;
@@ -86,7 +97,10 @@ const { class: className, zones = true, as: Inner = 'div' } = Astro.props;
     .sheet.zoned {
       padding: 6px;
     }
-    .zones {
+    .inner.bare {
+    border: 0;
+  }
+  .zones {
       display: none;
     }
   }

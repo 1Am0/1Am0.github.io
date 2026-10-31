@@ -23,6 +23,8 @@ export interface Props {
   spin?: boolean;
   /** Which animation in the file to show first (defaults to the first one). */
   animation?: string;
+  /** No outer frame or margin, for use inside another sheet (e.g. the project media panel). */
+  bare?: boolean;
 }
 
 const {
@@ -34,12 +36,13 @@ const {
   orbit = '30deg 55deg auto',
   spin,
   animation,
+  bare = false,
 } = Astro.props;
 const posterSrc = typeof poster === 'string' ? poster : poster?.src;
 ---
 
-<div class="board" data-board data-orbit={orbit} data-spin={spin === undefined ? 'auto' : String(spin)} data-animation={animation}>
-  <Sheet zones={false} as="figure">
+<div class:list={['board', { bare }]} data-board data-orbit={orbit} data-spin={spin === undefined ? 'auto' : String(spin)} data-animation={animation}>
+  <Sheet zones={false} as="figure" bare={bare}>
     <div class="stage">
       <model-viewer
         src={src}
@@ -270,6 +273,9 @@ const posterSrc = typeof poster === 'string' ? poster : poster?.src;
 <style>
   .board {
     margin: 2rem 0;
+  }
+  .board.bare {
+    margin: 0;
   }
   .stage {
     position: relative;

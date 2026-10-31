@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import FeaturedProject from '../components/FeaturedProject.astro';
+import ProjectVisual from '../components/ProjectVisual.astro';
 import SpecTable from '../components/SpecTable.astro';
 import Sheet from '../components/Sheet.astro';
 import StatusBadge from '../components/StatusBadge.astro';
@@ -74,9 +75,12 @@ const otherHardware = hardware.filter((p) => p !== featured);
       <ul class="rows">
         {
           software.map((p) => (
-            <li class="row">
-              <span class="mono-label row-code">{codes.get(p.id)}</span>
+            <li class="row with-thumb">
+              <div class="thumb">
+                <ProjectVisual project={p} code={codes.get(p.id)!} widths={[240, 480]} sizes="11rem" />
+              </div>
               <div class="row-main">
+                <span class="mono-label row-code">{codes.get(p.id)} · {p.data.discipline}</span>
                 <h3>
                   <a href={`/projects/${p.id}/`}>
                     {p.data.title}
@@ -265,6 +269,36 @@ const otherHardware = hardware.filter((p) => p !== featured);
   .row-code {
     padding-top: 0.3rem;
   }
+  /* Software rows: thumbnail on the left; the whole row links through the title. */
+  .row.with-thumb {
+    position: relative;
+    grid-template-columns: 11rem minmax(0, 1fr);
+    align-items: start;
+  }
+  .with-thumb .row-code {
+    padding-top: 0;
+  }
+  .thumb {
+    aspect-ratio: 16 / 10;
+    border: 1px solid var(--line);
+    overflow: hidden;
+    transition: border-color 0.15s;
+  }
+  .row.with-thumb:hover .thumb {
+    border-color: var(--accent);
+  }
+  .with-thumb h3 a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+  .with-thumb:has(h3 a:focus-visible) {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .with-thumb h3 a:focus-visible {
+    outline: none;
+  }
   .row-main {
     display: grid;
     gap: 0.4rem;
@@ -372,6 +406,10 @@ const otherHardware = hardware.filter((p) => p !== featured);
     }
     .row {
       grid-template-columns: 1fr;
+    }
+    .row.with-thumb {
+      grid-template-columns: 6.5rem minmax(0, 1fr);
+      gap: 0.4rem 1rem;
     }
     .grid {
       grid-template-columns: 1fr;

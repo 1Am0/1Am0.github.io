@@ -19,15 +19,17 @@ interface Props {
   poster?: ImageMetadata | string;
   /** Normal player with sound and controls instead of a silent loop. */
   controls?: boolean;
+  /** No outer frame or margin, for use inside another sheet (e.g. the project media panel). */
+  bare?: boolean;
 }
 
-const { src, alt, caption = 'Demo', n, poster, controls = false } = Astro.props;
+const { src, alt, caption = 'Demo', n, poster, controls = false, bare = false } = Astro.props;
 const posterSrc = typeof poster === 'string' ? poster : poster?.src;
 const type = src.toLowerCase().endsWith('.webm') ? 'video/webm' : 'video/mp4';
 ---
 
-<div class="demo" data-demo={controls ? 'player' : 'loop'}>
-  <Sheet zones={false} as="figure">
+<div class:list={['demo', { bare }]} data-demo={controls ? 'player' : 'loop'}>
+  <Sheet zones={false} as="figure" bare={bare}>
     <div class="stage">
       <video
         poster={posterSrc}
@@ -127,6 +129,9 @@ const type = src.toLowerCase().endsWith('.webm') ? 'video/webm' : 'video/mp4';
 <style>
   .demo {
     margin: 2rem 0;
+  }
+  .demo.bare {
+    margin: 0;
   }
   .stage {
     position: relative;

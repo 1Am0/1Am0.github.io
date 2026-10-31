@@ -73,6 +73,50 @@ In the repo settings, **Pages → Source** must be set to **GitHub Actions**.
    Each `##` heading becomes an entry in the page's "On this page" contents list (shown on wide screens
    once a write-up has three or more sections).
 
+## Project media (top of each project page)
+
+The top of a project page is one framed panel with a tab for each view the project has:
+**3D model · Schematic · PCB layout · Photo · Demo**. Only the views you provide appear; with just one there are
+no tabs. Every view is the same size, so switching doesn't make the page jump, and images open full screen on
+click.
+
+```yaml
+model:                       # 3D model → see "Interactive 3D models" below
+  src: /models/bench-psu.glb
+  poster: ../../assets/projects/bench-psu/render.png    # also used as the card image on the home page
+schematic:
+  src: ../../assets/projects/bench-psu/schematic.png
+  alt: Power stage schematic with the TPS63070 buck-boost and output filter
+  caption: Schematic / power stage                       # optional
+pcb:
+  src: ../../assets/projects/bench-psu/layout.png
+  alt: Two-layer board layout, top copper
+  caption: PCB layout / top copper                       # optional
+cover: ../../assets/projects/bench-psu/photo.jpg         # photo of the real build → "Photo" tab
+coverAlt: Assembled board on the bench
+video:                                                    # → "Demo" tab, see "Demo videos"
+  src: /videos/psu-load-test.mp4
+  alt: Output holding 5 V as the load steps
+```
+
+(The layout field is `pcb:`, not `layout:`; MDX reserves `layout`, and using it breaks the page.)
+
+**Exporting images from KiCad:**
+
+- Schematic: Schematic Editor → File → Plot → **SVG** (or PDF; convert to PNG for the site). SVG stays sharp at
+  any zoom. Turn on "Plot drawing sheet" if you want KiCad's own title block in the image.
+- PCB layout: PCB Editor → File → Plot → **SVG** with the copper, silkscreen and Edge.Cuts layers, or
+  View → 3D Viewer → File → Export Current View as PNG for a rendered top view.
+- Export at 2000 px wide or more so the zoom viewer has detail to show.
+
+### Pictures on the home page
+
+Every project card and software row has a picture. It uses the first of these that the project has:
+`cover` photo → `model.poster` (a render) → `pcb` → `schematic`. If none are set, the card shows a generated
+drawing (an IC footprint for hardware, a code window for software) that's different for each project. For the
+strongest home page, give each hardware project a `model.poster` render or a `cover` photo, and give software
+projects a `cover` screenshot.
+
 ## Interactive 3D models
 
 Project pages can show a 3D model visitors can rotate: a PCB, an enclosure, or a whole mechanism. Drag to

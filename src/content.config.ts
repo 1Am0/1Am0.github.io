@@ -1,6 +1,16 @@
-import { defineCollection } from 'astro:content';
+import { defineCollection, type SchemaContext } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
+
+// A drawing shown in the project's media panel: an exported schematic or board layout (PNG/JPG/WebP/SVG).
+const drawing = (image: SchemaContext['image']) =>
+  z
+    .object({
+      src: image(),
+      alt: z.string(),
+      caption: z.string().optional(),
+    })
+    .optional();
 
 const projects = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/projects' }),
@@ -22,8 +32,13 @@ const projects = defineCollection({
       draft: z.boolean().default(false),
       date: z.coerce.date().optional(),
       tags: z.array(z.string()).default([]),
+      // Photo of the finished build. Also used as the card image and social preview.
       cover: image().optional(),
       coverAlt: z.string().optional(),
+      // Schematic and PCB layout images, shown as tabs next to the 3D model at the top of the project page.
+      // (The layout field is called `pcb` because MDX reserves `layout`.)
+      schematic: drawing(image),
+      pcb: drawing(image),
       // Interactive 3D model shown on the project page (PCB, enclosure, mechanism…). `src` is a .glb under
       // public/, e.g. /models/board.glb. Animations inside the GLB get play/pause and timeline controls.
       model: z

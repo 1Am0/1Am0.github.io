@@ -1,13 +1,10 @@
 ---
-import { Image } from 'astro:assets';
 import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import Sheet from '../../components/Sheet.astro';
-import ModelViewer from '../../components/ModelViewer.astro';
-import DemoVideo from '../../components/DemoVideo.astro';
+import MediaPanel from '../../components/MediaPanel.astro';
 import Downloads from '../../components/Downloads.astro';
 import Lightbox from '../../components/Lightbox.astro';
-import ZoomLink from '../../components/ZoomLink.astro';
 import SpecTable from '../../components/SpecTable.astro';
 import StatusBadge from '../../components/StatusBadge.astro';
 import { getProjects, getProjectCodes, type Project } from '../../lib/projects';
@@ -32,14 +29,8 @@ interface Props {
 }
 
 const { project, code, prev, next } = Astro.props;
-const {
-  title, summary, tags, cover, coverAlt, model, video, downloads, repo, demo, date, draft, discipline, role, status, highlights,
-} = project.data;
-// Figure numbers for the header media, in the order they appear.
-let fig = 0;
-const coverFig = cover ? ++fig : 0;
-const modelFig = model ? ++fig : 0;
-const videoFig = video ? ++fig : 0;
+const { title, summary, tags, cover, coverAlt, downloads, repo, demo, date, draft, discipline, role, status, highlights } =
+  project.data;
 const { Content, headings } = await render(project);
 const toc = headings.filter((h) => h.depth === 2);
 ---
@@ -79,49 +70,7 @@ const toc = headings.filter((h) => h.depth === 2);
       </aside>
     </header>
 
-    {
-      cover && (
-        <div class="cover">
-          <Sheet as="figure">
-            <ZoomLink src={cover} caption={`Fig. ${String(coverFig).padStart(2, '0')} — ${coverAlt ?? title}`}>
-              <Image src={cover} alt={coverAlt ?? ''} widths={[720, 1080, 1600]} sizes="(max-width: 1080px) 100vw, 1000px" />
-            </ZoomLink>
-            <figcaption class="mono-label">
-              <span>Fig. {String(coverFig).padStart(2, '0')} — {coverAlt ?? title}</span>
-              <span>{code}</span>
-            </figcaption>
-          </Sheet>
-        </div>
-      )
-    }
-
-    {
-      model && (
-        <ModelViewer
-          src={model.src}
-          alt={model.alt ?? `Interactive 3D model of ${title}`}
-          caption={model.caption ?? 'Interactive 3D model'}
-          n={modelFig}
-          poster={model.poster}
-          orbit={model.orbit}
-          spin={model.spin}
-          animation={model.animation}
-        />
-      )
-    }
-
-    {
-      video && (
-        <DemoVideo
-          src={video.src}
-          alt={video.alt}
-          caption={video.caption ?? 'Demo'}
-          n={videoFig}
-          poster={video.poster}
-          controls={video.controls}
-        />
-      )
-    }
+    <MediaPanel project={project} code={code} />
 
     <div class:list={['body', { 'has-toc': toc.length >= 3 }]}>
       <div class="main">
@@ -252,22 +201,6 @@ const toc = headings.filter((h) => h.depth === 2);
     flex-wrap: wrap;
     gap: 0.6rem;
     margin-top: 1.5rem;
-  }
-  .cover {
-    margin: 3rem 0 0;
-  }
-  .cover :global(img) {
-    width: 100%;
-  }
-  .cover figcaption span:last-child {
-    white-space: nowrap;
-  }
-  .cover figcaption {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: 0.6rem 0.75rem;
-    border-top: 1px solid var(--line);
   }
   .body {
     margin-top: 2.5rem;

@@ -1,9 +1,9 @@
 ---
-import { Image } from 'astro:assets';
 import type { Project } from '../lib/projects';
 import Sheet from './Sheet.astro';
 import SpecTable from './SpecTable.astro';
 import StatusBadge from './StatusBadge.astro';
+import ProjectVisual from './ProjectVisual.astro';
 
 interface Props {
   project: Project;
@@ -11,7 +11,7 @@ interface Props {
 }
 
 const { project, code } = Astro.props;
-const { title, summary, cover, coverAlt, discipline, role, tags, highlights, status, draft, repo } = project.data;
+const { title, summary, discipline, role, tags, highlights, status, draft, repo } = project.data;
 const href = `/projects/${project.id}/`;
 ---
 
@@ -35,18 +35,9 @@ const href = `/projects/${project.id}/`;
         <StatusBadge status={status} draft={draft} />
       </div>
     </div>
-    <div class="media">
-        {
-          cover ? (
-            <Image src={cover} alt={coverAlt ?? ''} widths={[600, 1000]} sizes="(max-width: 900px) 100vw, 55vw" />
-          ) : (
-            <div class="placeholder" aria-hidden="true">
-              <span>{code}</span>
-              <small>Add a cover image</small>
-            </div>
-          )
-        }
-    </div>
+    <a class="media" href={href} tabindex="-1" aria-hidden="true">
+      <ProjectVisual project={project} code={code} widths={[600, 1000]} sizes="(max-width: 900px) 100vw, 55vw" eager />
+    </a>
     {
       highlights.length > 0 && (
         <div class="notes">
@@ -108,34 +99,12 @@ const href = `/projects/${project.id}/`;
     background: var(--surface-2);
     overflow: hidden;
   }
-  .media :global(img) {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  .media {
+    display: block;
+    transition: border-color 0.15s;
   }
-  .placeholder {
-    height: 100%;
-    display: grid;
-    place-content: center;
-    justify-items: center;
-    gap: 0.4rem;
-    background-image:
-      linear-gradient(var(--grid) 1px, transparent 1px),
-      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-    background-size: 12px 12px;
-    font-family: var(--font-mono);
-  }
-  .placeholder span {
-    font-size: 2rem;
-    letter-spacing: 0.08em;
-    color: var(--accent);
-    opacity: 0.7;
-  }
-  .placeholder small {
-    font-size: 0.72rem;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
+  .media:hover {
+    border-color: var(--accent);
   }
   @media (max-width: 900px) {
     .layout {

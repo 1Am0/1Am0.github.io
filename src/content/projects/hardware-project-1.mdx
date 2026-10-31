@@ -16,6 +16,16 @@ tags: [Microcontroller, KiCad, Sensors]
 model:
   src: /models/example-board.glb
   caption: Sample board / interactive 3D
+  poster: ../../assets/projects/hardware-project-1/sample-render.png
+# Sample schematic and PCB layout; each becomes a tab next to the 3D model (see README → Project media).
+schematic:
+  src: ../../assets/projects/hardware-project-1/sample-schematic.png
+  alt: Sample RC low-pass filter schematic
+  caption: Sample schematic / RC low-pass
+pcb:
+  src: ../../assets/projects/hardware-project-1/sample-layout.png
+  alt: Top view of the sample board layout
+  caption: Sample PCB layout / top view
 # Sample demo clip; replace with a short video of your board working (see README → Demo videos).
 video:
   src: /videos/example-board-spin.mp4
@@ -54,7 +64,7 @@ Block diagram of the major subsystems (power, MCU, sensors, outputs) and how the
 Schematic and board renders or photos. Call out key choices: regulator selection, decoupling, protection,
 trace widths.
 
-<Figure src={sampleSchematic} alt="Sample RC low-pass filter schematic" n={3} caption="Sample schematic / click to zoom" />
+<Figure src={sampleSchematic} alt="Sample RC low-pass filter schematic" n={5} caption="Sample figure in the write-up" />
 
 ## Bill of materials
 

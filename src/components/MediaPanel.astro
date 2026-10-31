@@ -1,0 +1,284 @@
+---
+// Top-of-page media for a project, in one drawing sheet with a tab per view:
+// 3D model · Schematic · PCB layout · Photo · Demo. Only the views the project has are shown; with a single view
+// there are no tabs. Every view uses the same frame size, so switching doesn't make the page jump.
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import type { Project } from '../lib/projects';
+import Sheet from './Sheet.astro';
+import ModelViewer from './ModelViewer.astro';
+import DemoVideo from './DemoVideo.astro';
+import ZoomLink from './ZoomLink.astro';
+
+interface Props {
+  project: Project;
+  code: string;
+}
+
+const { project, code } = Astro.props;
+const { title, cover, coverAlt, model, video, schematic, pcb } = project.data;
+
+type View =
+  | { kind: 'model'; id: string; label: string }
+  | { kind: 'image'; id: string; label: string; src: ImageMetadata; alt: string; caption: string }
+  | { kind: 'video'; id: string; label: string };
+
+const views: View[] = [];
+if (model) views.push({ kind: 'model', id: 'model', label: '3D model' });
+if (schematic)
+  views.push({ kind: 'image', id: 'schematic', label: 'Schematic', src: schematic.src, alt: schematic.alt, caption: schematic.caption ?? 'Schematic' });
+if (pcb)
+  views.push({ kind: 'image', id: 'layout', label: 'PCB layout', src: pcb.src, alt: pcb.alt, caption: pcb.caption ?? 'PCB layout' });
+if (cover)
+  views.push({ kind: 'image', id: 'photo', label: 'Photo', src: cover, alt: coverAlt ?? '', caption: coverAlt ?? title });
+if (video) views.push({ kind: 'video', id: 'demo', label: 'Demo' });
+
+const tabs = views.length > 1;
+const base = `media-${project.id}`;
+const fig = (i: number) => i + 1;
+const pad = (n: number) => String(n).padStart(2, '0');
+---
+
+{
+  views.length > 0 && (
+    <section class="media" aria-label="Project media" data-media>
+      <Sheet>
+        {tabs && (
+          <div class="tabbar">
+            <div class="tabs" role="tablist" aria-label="Views">
+              {views.map((v, i) => (
+                <button
+                  type="button"
+                  role="tab"
+                  id={`${base}-tab-${v.id}`}
+                  aria-controls={`${base}-${v.id}`}
+                  aria-selected={i === 0 ? 'true' : 'false'}
+                  tabindex={i === 0 ? 0 : -1}
+                >
+                  <span class="num" aria-hidden="true">{pad(fig(i))}</span>
+                  {v.label}
+                </button>
+              ))}
+            </div>
+            <p class="mono-label sheet-no" aria-hidden="true">
+              <span>View</span>
+              <span data-current>1</span>
+              <span>/ {views.length} · {code}</span>
+            </p>
+          </div>
+        )}
+        {views.map((v, i) => (
+          <div
+            class="panel"
+            id={`${base}-${v.id}`}
+            role={tabs ? 'tabpanel' : undefined}
+            aria-labelledby={tabs ? `${base}-tab-${v.id}` : undefined}
+            hidden={i > 0}
+          >
+            {v.kind === 'model' && model && (
+              <ModelViewer
+                bare
+                src={model.src}
+                alt={model.alt ?? `Interactive 3D model of ${title}`}
+                caption={model.caption ?? 'Interactive 3D model'}
+                n={fig(i)}
+                poster={model.poster}
+                orbit={model.orbit}
+                spin={model.spin}
+                animation={model.animation}
+              />
+            )}
+            {v.kind === 'video' && video && (
+              <DemoVideo
+                bare
+                src={video.src}
+                alt={video.alt}
+                caption={video.caption ?? 'Demo'}
+                n={fig(i)}
+                poster={video.poster}
+                controls={video.controls}
+              />
+            )}
+            {v.kind === 'image' && (
+              <figure class="drawing">
+                <div class="stage">
+                  <ZoomLink src={v.src} caption={`Fig. ${pad(fig(i))} — ${v.caption}`}>
+                    <Image
+                      src={v.src}
+                      alt={v.alt}
+                      widths={[800, 1200, 1800]}
+                      sizes="(max-width: 1120px) 100vw, 1080px"
+                      loading={i === 0 ? 'eager' : 'lazy'}
+                    />
+                  </ZoomLink>
+                </div>
+                <figcaption class="mono-label">
+                  <span>Fig. {pad(fig(i))} — {v.caption}</span>
+                  <span class="hint">Click to zoom</span>
+                </figcaption>
+              </figure>
+            )}
+          </div>
+        ))}
+      </Sheet>
+    </section>
+  )
+}
+
+<script>
+  for (const media of document.querySelectorAll<HTMLElement>('[data-media]')) {
+    const tabs = [...media.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    const current = media.querySelector<HTMLElement>('[data-current]');
+    const select = (tab: HTMLButtonElement, focus = false) => {
+      tabs.forEach((t, i) => {
+        const on = t === tab;
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;
+        document.getElementById(t.getAttribute('aria-controls')!)!.hidden = !on;
+        if (on && current) current.textContent = String(i + 1);
+      });
+      if (focus) tab.focus();
+    };
+    tabs.forEach((tab, i) => {
+      tab.addEventListener('click', () => select(tab));
+      tab.addEventListener('keydown', (e) => {
+        const to = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1 }[e.key];
+        if (to === undefined) return;
+        e.preventDefault();
+        select(tabs[(to + tabs.length) % tabs.length], true);
+      });
+    });
+  }
+</script>
+
+<style>
+  .media {
+    margin-top: 2.5rem;
+  }
+  .tabbar {
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    gap: 1rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .tabs {
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  [role='tab'] {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1rem;
+    border: 0;
+    border-right: 1px solid var(--line);
+    background: transparent;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    cursor: pointer;
+    position: relative;
+  }
+  [role='tab']:hover {
+    color: var(--text);
+    background: var(--surface-2);
+  }
+  [role='tab'][aria-selected='true'] {
+    color: var(--text);
+    background: var(--surface-2);
+  }
+  [role='tab'][aria-selected='true']::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 2px;
+    background: var(--accent);
+  }
+  [role='tab']:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+  }
+  .num {
+    color: var(--accent);
+    font-size: 0.68rem;
+  }
+  .sheet-no {
+    display: flex;
+    align-items: center;
+    gap: 0.4em;
+    margin: 0;
+    padding: 0 0.85rem;
+    white-space: nowrap;
+  }
+  .panel[hidden] {
+    display: none;
+  }
+  .stage {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    background-color: var(--surface);
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 16px 16px;
+  }
+  .stage :global(a),
+  .stage :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .stage :global(img) {
+    object-fit: contain;
+    padding: 1rem;
+  }
+  .drawing {
+    margin: 0;
+  }
+  figcaption {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.6rem 0.75rem;
+    border-top: 1px solid var(--line);
+  }
+  .hint {
+    white-space: nowrap;
+  }
+  /* Demo clips use the same frame size as the other views. */
+  .panel :global(.demo video) {
+    aspect-ratio: 16 / 10;
+  }
+  @media (max-width: 600px) {
+    .stage {
+      aspect-ratio: 4 / 3;
+    }
+    .stage :global(img) {
+      padding: 0.5rem;
+    }
+    .panel :global(.demo video) {
+      aspect-ratio: 4 / 3;
+    }
+    .sheet-no,
+    .hint {
+      display: none;
+    }
+    [role='tab'] {
+      padding: 0.65rem 0.6rem;
+    }
+    .num {
+      display: none;
+    }
+    /* If the tabs still don't fit, fade the right edge to show they scroll. */
+    .tabs {
+      mask-image: linear-gradient(to right, #000 calc(100% - 1.5rem), transparent);
+    }
+  }
+</style>

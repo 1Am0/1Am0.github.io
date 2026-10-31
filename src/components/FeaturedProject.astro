@@ -4,6 +4,7 @@ import Sheet from './Sheet.astro';
 import SpecTable from './SpecTable.astro';
 import StatusBadge from './StatusBadge.astro';
 import ProjectVisual from './ProjectVisual.astro';
+import Icon from './Icon.astro';
 
 interface Props {
   project: Project;
@@ -31,7 +32,7 @@ const href = `/projects/${project.id}/`;
       />
       <div class="actions">
         <a class="btn btn-primary" href={href}>Open project →</a>
-        {repo && <a class="btn ext" href={repo} rel="noreferrer">Source</a>}
+        {repo && <a class="btn" href={repo} rel="noreferrer"><Icon name="github" />Source</a>}
         <StatusBadge status={status} draft={draft} />
       </div>
     </div>

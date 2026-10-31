@@ -9,7 +9,7 @@ export const site = {
   school: 'Patrick Henry High School',
   email: 'anthony.mokhov@gmail.com',
   github: 'https://github.com/1Am0',
-  linkedin: 'https://www.linkedin.com/in/anthony-mokhov',
+  linkedin: 'https://www.linkedin.com/in/anthony-mokhov-040018305/',
   // Set to '/resume.pdf' once the file is added to public/.
   resume: null as string | null,
   // Optional one-line status shown in the hero, e.g. 'Bringing up rev B of my ESP32 sensor board'.

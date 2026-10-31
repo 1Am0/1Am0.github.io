@@ -6,6 +6,7 @@
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 import type { Project } from '../lib/projects';
+import ProjectArt from './ProjectArt.astro';
 
 interface Props {
   project: Project;
@@ -17,10 +18,11 @@ interface Props {
 }
 
 const { project, code, widths = [480, 800], sizes = '(max-width: 820px) 100vw, 50vw', eager = false } = Astro.props;
-const { cover, coverAlt, model, pcb, schematic, category, title } = project.data;
+const { cover, coverAlt, model, pcb, schematic, category, title, art } = project.data;
 
 let image: { src: ImageMetadata; alt: string; photo: boolean } | undefined;
 if (cover) image = { src: cover, alt: coverAlt ?? '', photo: true };
+else if (art) image = undefined;
 else if (model?.poster) image = { src: model.poster, alt: model.alt ?? `3D render of ${title}`, photo: false };
 else if (pcb) image = { src: pcb.src, alt: pcb.alt, photo: false };
 else if (schematic) image = { src: schematic.src, alt: schematic.alt, photo: false };
@@ -75,9 +77,11 @@ const lines = Array.from({ length: 7 }, (_, i) => {
 });
 ---
 
-<div class:list={['visual', { photo: image?.photo, drawing: image && !image.photo, generated: !image }]}>
+<div class:list={['visual', { photo: image?.photo, drawing: image && !image.photo, generated: !image && !art, art: !image && art }]}>
   {
-    image ? (
+    !image && art ? (
+      <ProjectArt name={art} />
+    ) : image ? (
       <Image src={image.src} alt={image.alt} widths={widths} sizes={sizes} loading={eager ? 'eager' : 'lazy'} />
     ) : category === 'hardware' ? (
       <svg viewBox="0 0 320 200" aria-hidden="true">
@@ -133,6 +137,15 @@ const lines = Array.from({ length: 7 }, (_, i) => {
   }
   .photo :global(img) {
     object-fit: cover;
+  }
+  .art {
+    display: grid;
+    place-items: center;
+  }
+  .art :global(svg) {
+    width: auto;
+    height: 86%;
+    aspect-ratio: 1;
   }
   .drawing :global(img) {
     object-fit: contain;

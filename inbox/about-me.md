@@ -12,7 +12,6 @@ Fill in what you can; leave the rest blank. Lines starting with ">" show what's 
   - > Ranked 3rd in class:
 - **Relevant courses** you've taken or are taking (AP Physics, Calculus, electronics, engineering classes, etc.):
 - **Email to show on the site** (> anthony.mokhov@gmail.com):
-- **LinkedIn URL correct?** (> https://www.linkedin.com/in/anthony-mokhov):
 
 ## What you're looking for
 

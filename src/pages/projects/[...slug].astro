@@ -2,6 +2,8 @@
 import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import MediaPanel from '../../components/MediaPanel.astro';
+import Icon from '../../components/Icon.astro';
+import ProjectArt from '../../components/ProjectArt.astro';
 import Downloads from '../../components/Downloads.astro';
 import Lightbox from '../../components/Lightbox.astro';
 import SpecTable from '../../components/SpecTable.astro';
@@ -28,7 +30,7 @@ interface Props {
 }
 
 const { project, code, prev, next } = Astro.props;
-const { title, summary, tags, cover, coverAlt, downloads, repo, demo, date, draft, discipline, role, status, highlights } =
+const { title, summary, tags, cover, coverAlt, art, downloads, repo, demo, date, draft, discipline, role, status, highlights } =
   project.data;
 const { Content, headings } = await render(project);
 const toc = headings.filter((h) => h.depth === 2);
@@ -42,6 +44,11 @@ const toc = headings.filter((h) => h.depth === 2);
     </div>
     <header class="head">
       <div>
+        {art && (
+          <div class="art-tile">
+            <ProjectArt name={art} />
+          </div>
+        )}
         <p class="kicker mono-label"><span>{code}</span> / {discipline}</p>
         <h1>{title}</h1>
         <p class="summary">{summary}</p>
@@ -49,7 +56,7 @@ const toc = headings.filter((h) => h.depth === 2);
           (repo || demo) && (
             <div class="links">
               {demo && <a class="btn btn-primary ext" href={demo} rel="noreferrer">Live demo</a>}
-              {repo && <a class="btn ext" href={repo} rel="noreferrer">Source on GitHub</a>}
+              {repo && <a class="btn" href={repo} rel="noreferrer"><Icon name="github" />Source on GitHub</a>}
             </div>
           )
         }
@@ -194,6 +201,22 @@ const toc = headings.filter((h) => h.depth === 2);
     .crumbs span {
       display: none;
     }
+  }
+  .art-tile {
+    width: 5.5rem;
+    height: 5.5rem;
+    margin-bottom: 1.25rem;
+    padding: 0.4rem;
+    border: 1px solid var(--line);
+    background-color: var(--surface);
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 8px 8px;
+  }
+  .art-tile :global(svg) {
+    width: 100%;
+    height: 100%;
   }
   .links {
     display: flex;

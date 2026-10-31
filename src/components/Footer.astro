@@ -1,5 +1,6 @@
 ---
 import { site } from '../data/site';
+import Icon from './Icon.astro';
 
 const built = new Date();
 const year = built.getFullYear();
@@ -24,9 +25,9 @@ const revision = built.toLocaleDateString('en-US', { month: 'short', year: 'nume
     <div class="row">
       <p>© {year} {site.name}</p>
       <ul>
-        <li><a href={site.github} rel="noreferrer">GitHub</a></li>
-        <li><a href={site.linkedin} rel="noreferrer">LinkedIn</a></li>
-        <li><a href={`mailto:${site.email}`}>Email</a></li>
+        <li><a href={site.github} rel="noreferrer"><Icon name="github" />GitHub</a></li>
+        <li><a href={site.linkedin} rel="noreferrer"><Icon name="linkedin" />LinkedIn</a></li>
+        <li><a href={`mailto:${site.email}`}><Icon name="mail" />Email</a></li>
         <li><a href="#top" class="top">Back to top ↑</a></li>
       </ul>
     </div>
@@ -72,6 +73,11 @@ const revision = built.toLocaleDateString('en-US', { month: 'short', year: 'nume
   }
   p {
     margin: 0;
+  }
+  ul a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
   }
   ul {
     display: flex;

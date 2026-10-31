@@ -4,6 +4,7 @@ import Hero from '../components/Hero.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import FeaturedProject from '../components/FeaturedProject.astro';
 import ProjectVisual from '../components/ProjectVisual.astro';
+import Icon from '../components/Icon.astro';
 import SpecTable from '../components/SpecTable.astro';
 import Sheet from '../components/Sheet.astro';
 import StatusBadge from '../components/StatusBadge.astro';
@@ -176,8 +177,9 @@ const otherHardware = hardware.filter((p) => p !== featured);
             Looking for internship, research or collaboration opportunities. The fastest way to reach me is email.
           </p>
           <div class="actions">
-            <a class="btn btn-primary" href={`mailto:${site.email}`}>Email me</a>
-            {site.resume && <a class="btn" href={site.resume}>Résumé (PDF)</a>}
+            <a class="btn btn-primary" href={`mailto:${site.email}`}><Icon name="mail" />Email me</a>
+            <a class="btn" href={site.linkedin} rel="noreferrer"><Icon name="linkedin" />LinkedIn</a>
+            {site.resume && <a class="btn" href={site.resume}><Icon name="resume" />Résumé (PDF)</a>}
           </div>
         </div>
       </div>
@@ -196,9 +198,9 @@ const otherHardware = hardware.filter((p) => p !== featured);
             ['Location', site.location],
             ['Focus', 'Embedded systems · Circuit design'],
             ['Also', 'Chess · Wrestling · Piano · Tutoring'],
-            ['Email', site.email, `mailto:${site.email}`],
-            ['LinkedIn', 'anthony-mokhov', site.linkedin],
-            ['GitHub', '1Am0', site.github],
+            ['Email', site.email, `mailto:${site.email}`, 'mail'],
+            ['LinkedIn', site.name, site.linkedin, 'linkedin'],
+            ['GitHub', '1Am0', site.github, 'github'],
           ]}
         />
       </div>

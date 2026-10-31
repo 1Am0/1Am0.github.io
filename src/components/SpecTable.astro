@@ -1,7 +1,9 @@
 ---
 // Key/value "title block" table, styled after the title block on an engineering drawing.
+import Icon from './Icon.astro';
+
 interface Props {
-  rows: [label: string, value: string | undefined, href?: string][];
+  rows: [label: string, value: string | undefined, href?: string, icon?: 'github' | 'linkedin' | 'mail' | 'resume'][];
   caption?: string;
   // Narrow label column, for numbered lists like design notes.
   numbered?: boolean;
@@ -16,12 +18,13 @@ const { rows, caption, numbered = false } = Astro.props;
     {
       rows
         .filter(([, v]) => v)
-        .map(([label, value, href]) => (
+        .map(([label, value, href, icon]) => (
           <tr>
             <th scope="row">{label}</th>
             <td>
               {href ? (
-                <a class:list={{ ext: !href.startsWith('mailto:') }} href={href} rel="noreferrer">
+                <a class:list={{ ext: !href.startsWith('mailto:') && !icon, 'with-icon': icon }} href={href} rel="noreferrer">
+                  {icon && <Icon name={icon} />}
                   {value}
                 </a>
               ) : (
@@ -69,6 +72,11 @@ const { rows, caption, numbered = false } = Astro.props;
   }
   .numbered th {
     width: 3rem;
+  }
+  .with-icon {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
   }
   td {
     font-family: var(--font-mono);

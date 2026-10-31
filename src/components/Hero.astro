@@ -1,4 +1,5 @@
 ---
+import Icon from './Icon.astro';
 import { site } from '../data/site';
 import Sheet from './Sheet.astro';
 import SpecTable from './SpecTable.astro';
@@ -24,9 +25,9 @@ import SpecTable from './SpecTable.astro';
       }
       <div class="actions">
         <a class="btn btn-primary" href="#projects">View projects</a>
-        {site.resume && <a class="btn" href={site.resume}>Résumé (PDF)</a>}
-        <a class="btn ext" href={site.github} rel="noreferrer">GitHub</a>
-        <a class="btn ext" href={site.linkedin} rel="noreferrer">LinkedIn</a>
+        {site.resume && <a class="btn" href={site.resume}><Icon name="resume" />Résumé (PDF)</a>}
+        <a class="btn" href={site.github} rel="noreferrer"><Icon name="github" />GitHub</a>
+        <a class="btn" href={site.linkedin} rel="noreferrer"><Icon name="linkedin" />LinkedIn</a>
       </div>
     </div>
 

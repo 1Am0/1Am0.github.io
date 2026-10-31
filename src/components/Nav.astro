@@ -13,7 +13,7 @@ const links = [
 
 <header class="nav">
   <div class="container nav-inner">
-    <a class="logo" href="/">
+    <a class="logo" href="/" aria-label={`${site.name}, home`}>
       <span class="logo-mark" aria-hidden="true">AM</span>
       <span class="logo-text">
         <span class="logo-name">{site.name}</span>
@@ -24,11 +24,21 @@ const links = [
       <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links">
         <span class="sr-only">Menu</span>
         <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
-          <path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path>
+          <path class="bars" d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path>
+          <path class="cross" d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path>
         </svg>
       </button>
       <ul id="nav-links" class="links">
-        {links.map((l) => <li><a href={l.href} data-section={l.href.split('#')[1]}>{l.label}</a></li>)}
+        {
+          links.map((l, i) => (
+            <li>
+              <a href={l.href} data-section={l.href.split('#')[1]}>
+                <span class="num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+                {l.label}
+              </a>
+            </li>
+          ))
+        }
         {site.resume && <li><a class="resume" href={site.resume}>Résumé</a></li>}
       </ul>
     </nav>
@@ -201,6 +211,16 @@ const links = [
   .menu-btn {
     display: none;
   }
+  .cross,
+  .menu-btn[aria-expanded='true'] .bars {
+    display: none;
+  }
+  .menu-btn[aria-expanded='true'] .cross {
+    display: inline;
+  }
+  .num {
+    display: none;
+  }
   .moon {
     display: none;
   }
@@ -240,6 +260,15 @@ const links = [
     }
     .links.open {
       display: flex;
+      box-shadow: 0 16px 32px -16px rgb(0 0 0 / 0.25);
+    }
+    .links li + li {
+      border-top: 1px solid var(--border);
+    }
+    .num {
+      display: inline-block;
+      width: 2.25rem;
+      color: var(--accent);
     }
     .links a {
       display: block;

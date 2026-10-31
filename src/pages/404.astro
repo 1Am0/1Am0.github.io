@@ -1,26 +1,101 @@
 ---
 import Base from '../layouts/Base.astro';
+import Sheet from '../components/Sheet.astro';
+import { site } from '../data/site';
 ---
 
-<Base title="Page not found · Anthony Mokhov">
+<Base title={`Page not found · ${site.name}`}>
   <section class="container nf">
-    <p class="section-label">Error 404</p>
-    <h1>Open circuit.</h1>
-    <p>This page doesn't exist, or it has moved.</p>
-    <a class="btn btn-primary" href="/">Back to home</a>
+    <div>
+      <p class="section-label">Error 404</p>
+      <h1>Open circuit.</h1>
+      <p class="lead">This page doesn't exist, or it has moved. No current is flowing here.</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="/">Back to home</a>
+        <a class="btn" href="/projects/">All projects</a>
+      </div>
+    </div>
+    <Sheet class="nf-sheet" zones={false}>
+      <figure aria-hidden="true">
+        <svg viewBox="0 0 320 170">
+          <path class="wire" d="M30 86 V50 H110 M178 50 H290 V68 M290 112 V130 H30 V96"></path>
+          <path class="part" d="M290 68 l8 4 l-16 8 l16 8 l-16 8 l16 8 l-16 8 l8 4"></path>
+          <path class="part" d="M18 86 H42 M24 96 H36"></path>
+          <path class="part" d="M110 50 L166 24"></path>
+          <circle class="term" cx="110" cy="50" r="4"></circle>
+          <circle class="term" cx="178" cy="50" r="4"></circle>
+          <text x="124" y="80">S1 · OPEN</text>
+          <text x="50" y="95">5 V</text>
+          <text x="248" y="94" text-anchor="end">R1 1k</text>
+          <text x="160" y="152" text-anchor="middle">I = 0 A</text>
+        </svg>
+        <figcaption class="mono-label">Fig. 404 — Switch S1 open</figcaption>
+      </figure>
+    </Sheet>
   </section>
 </Base>
 
 <style>
   .nf {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 26rem);
+    gap: 3rem;
+    align-items: center;
     padding-block: 6rem;
     min-height: 60vh;
   }
   h1 {
-    font-size: clamp(2.2rem, 6vw, 3.2rem);
+    font-size: clamp(2.4rem, 7vw, 4rem);
+    letter-spacing: -0.04em;
   }
-  p:not(.section-label) {
+  .lead {
     color: var(--text-muted);
-    margin: 0.75rem 0 2rem;
+    font-size: 1.05rem;
+    margin: 1rem 0 2rem;
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+  figure {
+    margin: 0;
+    padding: 1.25rem 1.25rem 0;
+  }
+  svg {
+    width: 100%;
+    height: auto;
+  }
+  .wire,
+  .part {
+    fill: none;
+    stroke: var(--text);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .part {
+    stroke: var(--accent);
+  }
+  .term {
+    fill: var(--surface);
+    stroke: var(--text);
+    stroke-width: 2;
+  }
+  text {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    fill: var(--text-muted);
+  }
+  figcaption {
+    margin: 1rem -1.25rem 0;
+    padding: 0.6rem 0.75rem;
+    border-top: 1px solid var(--line);
+  }
+  @media (max-width: 760px) {
+    .nf {
+      grid-template-columns: 1fr;
+      padding-block: 3rem 4rem;
+    }
   }
 </style>

@@ -199,6 +199,11 @@ const otherHardware = hardware.filter((p) => p !== featured);
   .count {
     margin: 0 0 2rem;
   }
+  @media (max-width: 640px) {
+    .count {
+      display: none;
+    }
+  }
   .grid {
     margin-top: 1.25rem;
     display: grid;

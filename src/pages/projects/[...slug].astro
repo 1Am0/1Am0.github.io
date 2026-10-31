@@ -6,6 +6,7 @@ import Sheet from '../../components/Sheet.astro';
 import SpecTable from '../../components/SpecTable.astro';
 import StatusBadge from '../../components/StatusBadge.astro';
 import { getProjects, getProjectCodes, type Project } from '../../lib/projects';
+import { site } from '../../data/site';
 
 export async function getStaticPaths() {
   const hardware = await getProjects('hardware');
@@ -28,10 +29,11 @@ interface Props {
 const { project, code, prev, next } = Astro.props;
 const { title, summary, tags, cover, coverAlt, repo, demo, date, draft, discipline, role, status, highlights } =
   project.data;
-const { Content } = await render(project);
+const { Content, headings } = await render(project);
+const toc = headings.filter((h) => h.depth === 2);
 ---
 
-<Base title={`${title} · Anthony Mokhov`} description={summary}>
+<Base title={`${title} · ${site.name}`} description={summary}>
   <article class="container project">
     <div class="crumbs mono-label">
       <a href="/projects/">← All projects</a>
@@ -80,16 +82,36 @@ const { Content } = await render(project);
       )
     }
 
-    {
-      highlights.length > 0 && (
-        <section class="notes" aria-label="Design notes">
-          <SpecTable caption="Design notes" numbered rows={highlights.map((h, i) => [String(i + 1).padStart(2, '0'), h])} />
-        </section>
-      )
-    }
-
-    <div class="prose">
-      <Content />
+    <div class:list={['body', { 'has-toc': toc.length >= 3 }]}>
+      <div class="main">
+        {
+          highlights.length > 0 && (
+            <section class="notes" aria-label="Design notes">
+              <SpecTable caption="Design notes" numbered rows={highlights.map((h, i) => [String(i + 1).padStart(2, '0'), h])} />
+            </section>
+          )
+        }
+        <div class="prose">
+          <Content />
+        </div>
+      </div>
+      {
+        toc.length >= 3 && (
+          <nav class="toc" aria-label="On this page">
+            <p class="mono-label">On this page</p>
+            <ol>
+              {toc.map((h, i) => (
+                <li>
+                  <a href={`#${h.slug}`} data-toc={h.slug}>
+                    <span>{String(i + 1).padStart(2, '0')}</span>
+                    {h.text}
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </nav>
+        )
+      }
     </div>
 
     <nav class="pager" aria-label="More projects">
@@ -98,6 +120,29 @@ const { Content } = await render(project);
     </nav>
   </article>
 </Base>
+
+<script>
+  // Highlight the contents entry for the section being read.
+  const tocLinks = new Map(
+    [...document.querySelectorAll<HTMLAnchorElement>('[data-toc]')].map((a) => [a.dataset.toc, a]),
+  );
+  if (tocLinks.size) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          tocLinks.forEach((a) => a.removeAttribute('aria-current'));
+          tocLinks.get(entry.target.id)?.setAttribute('aria-current', 'true');
+        }
+      },
+      { rootMargin: '0px 0px -70% 0px' },
+    );
+    tocLinks.forEach((_, id) => {
+      const el = document.getElementById(id!);
+      if (el) observer.observe(el);
+    });
+  }
+</script>
 
 <style>
   .project {
@@ -149,10 +194,7 @@ const { Content } = await render(project);
     border: 1px solid var(--line);
     border-top: 0;
   }
-  .notes {
-    max-width: 780px;
-    margin-top: 2.5rem;
-  }
+
   @media (max-width: 860px) {
     .head {
       grid-template-columns: 1fr;
@@ -180,12 +222,69 @@ const { Content } = await render(project);
     padding: 0.6rem 0.75rem;
     border-top: 1px solid var(--line);
   }
-  .prose {
+  .body {
     margin-top: 2.5rem;
   }
-  /* Text stays at a readable measure; framed figures use the full width. */
-  .prose > :global(:not(figure)) {
-    max-width: 780px;
+  .body.has-toc {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 13rem;
+    gap: 4rem;
+    align-items: start;
+  }
+  .toc {
+    position: sticky;
+    top: 5.5rem;
+    padding-left: 1rem;
+    border-left: 1px solid var(--line);
+  }
+  .toc p {
+    margin: 0 0 0.75rem;
+  }
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.15rem;
+  }
+  .toc a {
+    display: flex;
+    gap: 0.6rem;
+    padding: 0.3rem 0;
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    text-decoration: none;
+  }
+  .toc a span {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    padding-top: 0.15rem;
+  }
+  .toc a:hover,
+  .toc a[aria-current] {
+    color: var(--text);
+  }
+  .toc a[aria-current] span {
+    color: var(--accent);
+  }
+  .prose {
+    margin-top: 0.5rem;
+  }
+  /* Text stays at a readable measure; framed figures use the full column. */
+  .prose > :global(:not(figure)),
+  .notes {
+    max-width: 720px;
+  }
+  .prose :global(h2) {
+    scroll-margin-top: 5.5rem;
+  }
+  @media (max-width: 1100px) {
+    .body.has-toc {
+      display: block;
+    }
+    .toc {
+      display: none;
+    }
   }
   .prose :global(h2) {
     font-size: 1.4rem;

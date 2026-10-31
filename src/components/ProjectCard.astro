@@ -58,6 +58,14 @@ const href = `/projects/${project.id}/`;
     border-color: var(--accent);
     transform: translateY(-2px);
   }
+  /* The title link covers the card, so show focus on the whole card. */
+  .card:has(h3 a:focus-visible) {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent);
+  }
+  .card h3 a:focus-visible {
+    outline: none;
+  }
   .media {
     aspect-ratio: 16 / 9;
     margin: 6px 6px 0;

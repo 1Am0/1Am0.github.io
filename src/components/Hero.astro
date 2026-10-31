@@ -209,5 +209,21 @@ import SpecTable from './SpecTable.astro';
       grid-template-columns: 1fr;
       gap: 2.5rem;
     }
+    .hero-inner > :global(.hero-sheet) {
+      max-width: 30rem;
+    }
+  }
+  @media (max-width: 480px) {
+    /* Primary action on its own row, the two profile links sharing the next. */
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+    .actions .btn {
+      justify-content: center;
+    }
+    .actions .btn-primary {
+      grid-column: 1 / -1;
+    }
   }
 </style>

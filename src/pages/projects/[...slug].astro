@@ -3,7 +3,7 @@ import { Image } from 'astro:assets';
 import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import Sheet from '../../components/Sheet.astro';
-import BoardViewer from '../../components/BoardViewer.astro';
+import ModelViewer from '../../components/ModelViewer.astro';
 import DemoVideo from '../../components/DemoVideo.astro';
 import Downloads from '../../components/Downloads.astro';
 import Lightbox from '../../components/Lightbox.astro';
@@ -97,13 +97,15 @@ const toc = headings.filter((h) => h.depth === 2);
 
     {
       model && (
-        <BoardViewer
+        <ModelViewer
           src={model.src}
           alt={model.alt ?? `Interactive 3D model of ${title}`}
-          caption={model.caption ?? 'Interactive PCB assembly'}
+          caption={model.caption ?? 'Interactive 3D model'}
           n={modelFig}
           poster={model.poster}
           orbit={model.orbit}
+          spin={model.spin}
+          animation={model.animation}
         />
       )
     }

@@ -24,7 +24,8 @@ const projects = defineCollection({
       tags: z.array(z.string()).default([]),
       cover: image().optional(),
       coverAlt: z.string().optional(),
-      // Interactive 3D board shown on the project page. `src` is a .glb under public/, e.g. /models/board.glb.
+      // Interactive 3D model shown on the project page (PCB, enclosure, mechanism…). `src` is a .glb under
+      // public/, e.g. /models/board.glb. Animations inside the GLB get play/pause and timeline controls.
       model: z
         .object({
           src: z.string().regex(/\.glb$/i, 'model.src must point to a .glb file'),
@@ -32,6 +33,10 @@ const projects = defineCollection({
           caption: z.string().optional(),
           poster: image().optional(),
           orbit: z.string().optional(),
+          // Turntable spin; defaults to on for still models, off for animated ones.
+          spin: z.boolean().optional(),
+          // Name of the animation to show first, if the file has several.
+          animation: z.string().optional(),
         })
         .optional(),
       // Demo clip shown under the media on the project page. `src` is an .mp4/.webm under public/.

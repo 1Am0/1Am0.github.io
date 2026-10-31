@@ -1,0 +1,471 @@
+---
+// Interactive 3D model (GLB) in a drawing-sheet frame: PCBs, enclosures, mechanisms. Drag to rotate,
+// scroll/pinch to zoom. If the GLB contains animations (e.g. piano keys pressing, a hinge opening), an
+// animation bar appears with play/pause, a timeline and a picker when there are several.
+// Put the file in public/models/, then use it from project frontmatter (`model:`) or directly in MDX:
+//   import ModelViewer from '../../components/ModelViewer.astro';
+//   <ModelViewer src="/models/piano.glb" alt="3D model of the piano" caption="Key action / animated" n={3} />
+// The 3D library only downloads once a viewer scrolls near the screen.
+import type { ImageMetadata } from 'astro';
+import Sheet from './Sheet.astro';
+
+export interface Props {
+  /** Path to a .glb file under public/, e.g. "/models/board.glb". */
+  src: string;
+  alt: string;
+  caption?: string;
+  n?: number;
+  /** Still image shown while the model loads and if it fails (e.g. a render exported from your CAD tool). */
+  poster?: ImageMetadata | string;
+  /** Starting camera angle: "<azimuth> <elevation> <distance>". */
+  orbit?: string;
+  /** Slow turntable spin. Defaults to on for still models and off for animated ones. */
+  spin?: boolean;
+  /** Which animation in the file to show first (defaults to the first one). */
+  animation?: string;
+}
+
+const {
+  src,
+  alt,
+  caption = '3D model',
+  n,
+  poster,
+  orbit = '30deg 55deg auto',
+  spin,
+  animation,
+} = Astro.props;
+const posterSrc = typeof poster === 'string' ? poster : poster?.src;
+---
+
+<div class="board" data-board data-orbit={orbit} data-spin={spin === undefined ? 'auto' : String(spin)} data-animation={animation}>
+  <Sheet zones={false} as="figure">
+    <div class="stage">
+      <model-viewer
+        src={src}
+        alt={alt}
+        poster={posterSrc}
+        camera-controls
+        disable-pan
+        touch-action="pan-y"
+        camera-orbit={orbit}
+        min-camera-orbit="auto 5deg auto"
+        max-camera-orbit="auto 175deg auto"
+        auto-rotate-delay="2500"
+        rotation-per-second="12deg"
+        environment-image="neutral"
+        tone-mapping="neutral"
+        shadow-intensity="0.7"
+        shadow-softness="0.9"
+        exposure="1"
+        interaction-prompt="none"
+        loading="lazy"
+      >
+        <div slot="progress-bar" class="progress" aria-hidden="true"><span></span></div>
+      </model-viewer>
+      <div class="status mono-label" aria-live="polite">Loading 3D model…</div>
+      <div class="fallback" hidden>
+        {posterSrc ? <img src={posterSrc} alt={alt} /> : <p class="mono-label">3D model unavailable</p>}
+      </div>
+      <div class="toolbar" hidden>
+        <button type="button" data-action="reset" aria-label="Reset view" title="Reset view">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 9.5L10 4l6 5.5M6 8v8h8V8"></path></svg>
+        </button>
+        <button type="button" data-action="spin" aria-pressed="false" aria-label="Turntable spin" title="Turntable spin">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M15.5 7.5C14.5 5.5 12.4 4 10 4 6.7 4 4 6.7 4 10s2.7 6 6 6c2.6 0 4.8-1.7 5.6-4M16 4v3.5h-3.5"></path></svg>
+        </button>
+        <button type="button" data-action="fullscreen" aria-label="Full screen" title="Full screen">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 8V4h4M12 4h4v4M16 12v4h-4M8 16H4v-4"></path></svg>
+        </button>
+      </div>
+      <div class="anim" hidden>
+        <button type="button" data-action="play" aria-pressed="false" aria-label="Play animation">
+          <svg class="pause" viewBox="0 0 20 20" aria-hidden="true"><path d="M7 5v10M13 5v10"></path></svg>
+          <svg class="play" viewBox="0 0 20 20" aria-hidden="true"><path d="M7 5l8 5-8 5z"></path></svg>
+        </button>
+        <select class="mono-label" aria-label="Animation" hidden></select>
+        <span class="name mono-label"></span>
+        <input type="range" min="0" max="1000" step="1" value="0" aria-label="Animation position" />
+        <span class="time mono-label" aria-hidden="true">0.0 s</span>
+      </div>
+    </div>
+    <figcaption class="mono-label">
+      <span>{n !== undefined && <>Fig. {String(n).padStart(2, '0')} — </>}{caption}</span>
+      <span class="hint">Drag to rotate · Scroll to zoom</span>
+    </figcaption>
+  </Sheet>
+</div>
+
+<script>
+  type Viewer = HTMLElement & {
+    loaded?: boolean;
+    cameraOrbit: string;
+    fieldOfView: string;
+    resetTurntableRotation?: () => void;
+    availableAnimations: string[];
+    animationName: string | undefined;
+    currentTime: number;
+    duration: number;
+    paused: boolean;
+    play(options?: { repetitions?: number }): void;
+    pause(): void;
+  };
+
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  let library: Promise<unknown> | undefined;
+  const loadLibrary = () => (library ??= import('@google/model-viewer'));
+  const nextFrame = () => new Promise((r) => requestAnimationFrame(r));
+
+  for (const figure of document.querySelectorAll<HTMLElement>('[data-board]')) {
+    const viewer = figure.querySelector<Viewer>('model-viewer')!;
+    const stage = figure.querySelector<HTMLElement>('.stage')!;
+    const status = figure.querySelector<HTMLElement>('.status')!;
+    const toolbar = figure.querySelector<HTMLElement>('.toolbar')!;
+    const spinBtn = figure.querySelector<HTMLButtonElement>('[data-action="spin"]')!;
+    const fullBtn = figure.querySelector<HTMLButtonElement>('[data-action="fullscreen"]')!;
+    const animBar = figure.querySelector<HTMLElement>('.anim')!;
+    const playBtn = figure.querySelector<HTMLButtonElement>('[data-action="play"]')!;
+    const picker = animBar.querySelector('select')!;
+    const nameLabel = animBar.querySelector<HTMLElement>('.name')!;
+    const scrub = animBar.querySelector('input')!;
+    const timeLabel = animBar.querySelector<HTMLElement>('.time')!;
+    const orbit = figure.dataset.orbit!;
+    let loaded = false;
+    let visible = false;
+    let spinning = false;
+    let animated = false; // false while a clip is being swapped
+    let hasAnimations = false;
+    let playing = false; // what the visitor wants; actual playback also needs the model on screen
+    let scrubbing = false;
+
+    const updateSpin = () => {
+      viewer.toggleAttribute('auto-rotate', loaded && spinning && visible && !document.hidden);
+      spinBtn.setAttribute('aria-pressed', String(spinning));
+    };
+
+    const updatePlay = () => {
+      if (!animated) return;
+      const run = playing && visible && !document.hidden && !scrubbing;
+      if (run && viewer.paused) viewer.play({ repetitions: Infinity });
+      if (!run && !viewer.paused) viewer.pause();
+      playBtn.setAttribute('aria-pressed', String(playing));
+      playBtn.setAttribute('aria-label', playing ? 'Pause animation' : 'Play animation');
+    };
+
+    const update = () => {
+      updateSpin();
+      updatePlay();
+    };
+
+    // Keep the timeline in step with playback while the model is on screen.
+    const tick = () => {
+      if (!hasAnimations || !visible) return;
+      const d = viewer.duration || 0;
+      const t = d ? viewer.currentTime % d : 0;
+      if (!scrubbing) scrub.value = String(d ? Math.round((t / d) * 1000) : 0);
+      timeLabel.textContent = `${t.toFixed(1)} / ${d.toFixed(1)} s`;
+      requestAnimationFrame(tick);
+    };
+
+    const selectAnimation = async (name: string) => {
+      animated = false; // hold playback while model-viewer swaps the clip on its next update
+      if (!viewer.paused) viewer.pause();
+      viewer.animationName = name;
+      nameLabel.textContent = name;
+      await nextFrame();
+      viewer.currentTime = 0;
+      animated = true;
+      updatePlay();
+    };
+
+    viewer.addEventListener('load', async () => {
+      loaded = true;
+      figure.dataset.state = 'loaded';
+      status.hidden = true;
+      toolbar.hidden = false;
+
+      const names = viewer.availableAnimations ?? [];
+      hasAnimations = names.length > 0;
+      const spinSetting = figure.dataset.spin;
+      spinning = !reducedMotion.matches && (spinSetting === 'auto' ? !hasAnimations : spinSetting === 'true');
+
+      if (hasAnimations) {
+        figure.dataset.animated = '';
+        animBar.hidden = false;
+        if (names.length > 1) {
+          picker.replaceChildren(...names.map((n) => new Option(n, n)));
+          picker.hidden = false;
+          nameLabel.hidden = true;
+        }
+        const first = names.includes(figure.dataset.animation ?? '') ? figure.dataset.animation! : names[0];
+        picker.value = first;
+        playing = !reducedMotion.matches;
+        // Start once the first frame has drawn, so a slow first render doesn't skip the start of the clip.
+        await nextFrame();
+        await nextFrame();
+        await selectAnimation(first);
+        requestAnimationFrame(tick);
+      }
+      update();
+    });
+    viewer.addEventListener('error', () => {
+      figure.dataset.state = 'error';
+      status.hidden = true;
+      viewer.hidden = true;
+      figure.querySelector<HTMLElement>('.fallback')!.hidden = false;
+    });
+
+    figure.querySelector('[data-action="reset"]')!.addEventListener('click', () => {
+      viewer.cameraOrbit = orbit;
+      viewer.fieldOfView = 'auto';
+      viewer.resetTurntableRotation?.();
+    });
+    spinBtn.addEventListener('click', () => {
+      spinning = !spinning;
+      updateSpin();
+    });
+    if (document.fullscreenEnabled) {
+      fullBtn.addEventListener('click', () =>
+        document.fullscreenElement ? document.exitFullscreen() : stage.requestFullscreen(),
+      );
+    } else {
+      fullBtn.hidden = true;
+    }
+
+    playBtn.addEventListener('click', () => {
+      playing = !playing;
+      updatePlay();
+    });
+    picker.addEventListener('change', () => selectAnimation(picker.value));
+    // Dragging the timeline pauses playback and shows that moment; letting go resumes if it was playing.
+    scrub.addEventListener('input', () => {
+      scrubbing = true;
+      updatePlay();
+      viewer.currentTime = (Number(scrub.value) / 1000) * (viewer.duration || 0);
+    });
+    scrub.addEventListener('change', () => {
+      scrubbing = false;
+      updatePlay();
+    });
+
+    new IntersectionObserver(
+      (entries) => {
+        const wasVisible = visible;
+        visible = entries[0].isIntersecting;
+        if (visible) loadLibrary();
+        update();
+        if (visible && !wasVisible) requestAnimationFrame(tick);
+      },
+      { rootMargin: '300px 0px' },
+    ).observe(figure);
+    document.addEventListener('visibilitychange', update);
+    reducedMotion.addEventListener('change', () => {
+      spinning = spinning && !reducedMotion.matches;
+      playing = playing && !reducedMotion.matches;
+      update();
+    });
+  }
+</script>
+
+<style>
+  .board {
+    margin: 2rem 0;
+  }
+  .stage {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    background-color: var(--surface);
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 16px 16px;
+  }
+  .stage:fullscreen {
+    aspect-ratio: auto;
+  }
+  model-viewer {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    --poster-color: transparent;
+    outline: none;
+  }
+  model-viewer:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+  }
+  .progress {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+  }
+  .progress span {
+    display: block;
+    height: 100%;
+    width: 30%;
+    background: var(--accent);
+    animation: load 1.2s ease-in-out infinite;
+  }
+  [data-state] .progress {
+    display: none;
+  }
+  @keyframes load {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(340%);
+    }
+  }
+  .status,
+  .fallback {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+  }
+  .status[hidden],
+  .fallback[hidden] {
+    display: none;
+  }
+  .fallback img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  .toolbar {
+    position: absolute;
+    top: 0.6rem;
+    right: 0.6rem;
+    display: flex;
+    gap: 0.35rem;
+  }
+  .toolbar[hidden],
+  .anim[hidden],
+  [hidden] {
+    display: none !important;
+  }
+  button {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    flex-shrink: 0;
+    padding: 0;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--text-muted);
+    cursor: pointer;
+  }
+  button:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+  .toolbar [aria-pressed='true'] {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: var(--surface-2);
+  }
+  svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .anim .play,
+  .anim [aria-pressed='true'] .pause {
+    display: block;
+  }
+  .anim .pause,
+  .anim [aria-pressed='true'] .play {
+    display: none;
+  }
+  .anim {
+    position: absolute;
+    left: 0.6rem;
+    right: 0.6rem;
+    bottom: 0.6rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    max-width: 34rem;
+    padding: 0.3rem 0.6rem 0.3rem 0.3rem;
+    border: 1px solid var(--line);
+    background: var(--surface);
+  }
+  .anim button {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+  .anim select {
+    flex-shrink: 0;
+    max-width: 9rem;
+    height: 1.75rem;
+    padding: 0 0.4rem;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+  }
+  .name {
+    flex-shrink: 0;
+    max-width: 9rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--text);
+  }
+  .anim input {
+    flex: 1;
+    min-width: 3rem;
+    margin: 0;
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
+  .time {
+    flex-shrink: 0;
+    min-width: 6.5em;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .anim :is(button, select, input):focus-visible,
+  .toolbar button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  figcaption {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.6rem 0.75rem;
+    border-top: 1px solid var(--line);
+  }
+  .hint {
+    white-space: nowrap;
+  }
+  @media (max-width: 600px) {
+    .stage {
+      aspect-ratio: 4 / 3;
+    }
+    /* Taller on phones when the animation bar is showing, so it doesn't cover the model. */
+    [data-animated] .stage {
+      aspect-ratio: 1;
+    }
+    .hint,
+    .time {
+      display: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .progress span {
+      animation: none;
+      width: 100%;
+    }
+  }
+</style>

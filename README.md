@@ -73,39 +73,76 @@ In the repo settings, **Pages → Source** must be set to **GitHub Actions**.
    Each `##` heading becomes an entry in the page's "On this page" contents list (shown on wide screens
    once a write-up has three or more sections).
 
-## Interactive 3D board models
+## Interactive 3D models
 
-Project pages can show a rotatable 3D model of a PCB (drag to rotate, scroll or pinch to zoom, arrow keys,
-reset / pause / fullscreen buttons).
+Project pages can show a 3D model visitors can rotate: a PCB, an enclosure, or a whole mechanism. Drag to
+rotate, scroll or pinch to zoom, use the arrow keys, and there are reset / turntable / fullscreen buttons. If the
+file contains **animations** (piano keys pressing, a lid opening, a gear train turning), an animation bar
+appears with play/pause, a timeline you can drag, and a picker when there are several.
 
-1. Export a **GLB** from your PCB tool:
-   - **KiCad 8+:** PCB Editor → File → Export → GLB.
-   - **Altium / Fusion / others:** export STEP, then convert to GLB (e.g. import into Blender and
-     File → Export → glTF 2.0 (.glb)).
-   Keep it under ~10 MB; KiCad exports of small boards are usually 1–5 MB.
-2. Put the file in `public/models/`, e.g. `public/models/weather-station.glb`.
-3. Add it to the project's frontmatter:
+### Get a GLB file
+
+The viewer takes **GLB** (binary glTF), the standard 3D format for the web.
+
+- **KiCad 8+ (PCBs):** PCB Editor → File → Export → GLB. Done.
+- **Fusion (still model):** File → Export → **FBX** (keeps colours better than OBJ), then convert to GLB in
+  Blender: File → Import → FBX, then File → Export → glTF 2.0, format **glTF Binary (.glb)**.
+- **Fusion (animated), e.g. a piano with moving keys:** Fusion's own animations don't export, so do the motion
+  in [Blender](https://www.blender.org) (free):
+  1. In Fusion, make each moving part (every key) its own **component**, then File → Export → **FBX**. Each
+     component arrives in Blender as a separate object you can move.
+  2. In Blender, File → Import → FBX. For each key, set its pivot where it hinges (Object → Set Origin → 3D
+     Cursor after snapping the cursor to the hinge), then insert rotation keyframes (I → Rotation) for "up",
+     "down", "up".
+  3. Optional: make several clips (e.g. "Scale" and "Chord") as separate Actions in the Action Editor and push
+     each one down to the NLA editor. Each becomes a choice in the site's animation picker.
+  4. File → Export → glTF 2.0 → **glTF Binary (.glb)**, with Animation ticked (Mode: "Actions" or "NLA Tracks").
+- **SolidWorks / Onshape / Altium:** export FBX or OBJ (or STEP, converted with a free tool such as
+  FreeCAD) and follow the same Blender route.
+
+Check the file before uploading by dragging it onto <https://gltf-viewer.donmccurdy.com>: if it looks and moves
+right there, it will on the site.
+
+**File size:** aim for under ~10 MB. CAD exports are often much bigger than they need to be. Shrink one with:
+
+```bash
+npx @gltf-transform/cli optimize big.glb small.glb --compress draco --texture-compress webp
+```
+
+(or in Blender, tick Compression in the glTF export options; for very detailed models, use Decimate first).
+
+### Add it to a project
+
+1. Put the file in `public/models/`, e.g. `public/models/piano.glb`.
+2. Add it to the project's frontmatter:
 
    ```yaml
    model:
-     src: /models/weather-station.glb
-     caption: PCB assembly / interactive 3D    # optional
-     poster: ../../assets/projects/weather-station/render.png  # optional still image shown while loading
-     orbit: 30deg 55deg auto                    # optional starting angle
+     src: /models/piano.glb
+     alt: 3D model of the piano with the key action animated   # describe what it shows
+     caption: Key action / animated                             # optional
+     poster: ../../assets/projects/piano/render.png             # optional still shown while loading
+     orbit: 30deg 55deg auto                                    # optional starting angle
+     animation: Scale                                           # optional: which animation shows first
+     spin: false                                                # optional: turntable spin (default: on for
+                                                                #   still models, off for animated ones)
    ```
 
    Or place one (or more) anywhere in the write-up:
 
    ```mdx
-   import BoardViewer from '../../components/BoardViewer.astro';
+   import ModelViewer from '../../components/ModelViewer.astro';
 
-   <BoardViewer src="/models/weather-station.glb" alt="3D model of the weather station PCB" n={3} />
+   <ModelViewer src="/models/piano.glb" alt="3D model of the piano" caption="Key action" n={3} animation="Chord" />
    ```
 
-The 3D library (~1 MB) only downloads when a model scrolls into view, so pages without models stay fast. The
-model spins slowly while visible, and doesn't spin for visitors who have reduced motion turned on.
-`public/models/example-board.glb` is a sample used by the placeholder project; delete it once you have
-your own.
+The 3D library (~1 MB) only downloads when a model scrolls into view, so pages without models stay fast.
+Animations play on a loop while the model is on screen and pause when you scroll away. For visitors who have
+reduced motion turned on, nothing moves until they press play. `BoardViewer` still works as another name for
+`ModelViewer`.
+
+Samples to delete once you have your own: `public/models/example-board.glb` (still PCB, used by placeholder 1)
+and `public/models/example-keyboard.glb` (animated keyboard, used by placeholder 2).
 
 ## Click to zoom
 

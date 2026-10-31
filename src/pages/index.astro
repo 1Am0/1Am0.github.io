@@ -4,6 +4,8 @@ import Hero from '../components/Hero.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import FeaturedProject from '../components/FeaturedProject.astro';
 import SpecTable from '../components/SpecTable.astro';
+import Sheet from '../components/Sheet.astro';
+import StatusBadge from '../components/StatusBadge.astro';
 import { getProjects, getProjectCodes } from '../lib/projects';
 import { Image } from 'astro:assets';
 import { site, skillGroups, experience, awards, education } from '../data/site';
@@ -50,7 +52,16 @@ const otherHardware = hardware.filter((p) => p !== featured);
             )}
           </>
         ) : (
-          <p class="empty">Hardware write-ups are in progress. Check back soon.</p>
+          <Sheet zones={false}>
+            <div class="empty">
+              <p class="mono-label"><span>HW-001</span> · Pending release</p>
+              <p>
+                Hardware write-ups (schematics, board layouts and test results) are being documented and will be
+                published here.
+              </p>
+              <StatusBadge status="in-progress" />
+            </div>
+          </Sheet>
         )
       }
 
@@ -211,10 +222,22 @@ const otherHardware = hardware.filter((p) => p !== featured);
     gap: 1.25rem;
   }
   .empty {
-    color: var(--text-muted);
-    border: 1px dashed var(--line);
+    display: grid;
+    gap: 0.75rem;
+    justify-items: start;
     padding: 2rem;
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 12px 12px;
+  }
+  .empty p {
     margin: 0;
+    max-width: 40rem;
+    color: var(--text-muted);
+  }
+  .empty .mono-label span {
+    color: var(--accent);
   }
   .sub {
     margin-top: 3.5rem;

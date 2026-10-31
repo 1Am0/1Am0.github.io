@@ -61,8 +61,8 @@ export const experience = [
 export const awards = [
   { name: 'AP Scholar with Distinction', issuer: 'College Board', url: null },
   {
-    name: 'Java Programming',
-    issuer: 'Credly',
+    name: 'IT Specialist – Java',
+    issuer: 'Certiport (Pearson VUE)',
     url: 'https://www.credly.com/badges/010ae9ae-9edf-4365-aa7b-fcfdddcd6881/public_url',
   },
   { name: 'US Chess Expert', issuer: 'US Chess Federation', url: null },

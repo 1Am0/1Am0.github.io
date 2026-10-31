@@ -99,6 +99,8 @@ video:                                                    # → "Demo" tab, see 
   alt: Output holding 5 V as the load steps
 ```
 
+To open on a different tab, add `firstView: schematic` (or `pcb`, `photo`, `demo`).
+
 (The layout field is `pcb:`, not `layout:`; MDX reserves `layout`, and using it breaks the page.)
 
 **Exporting images from KiCad:**
@@ -182,8 +184,7 @@ npx @gltf-transform/cli optimize big.glb small.glb --compress draco --texture-co
 
 The 3D library (~1 MB) only downloads when a model scrolls into view, so pages without models stay fast.
 Animations play on a loop while the model is on screen and pause when you scroll away. For visitors who have
-reduced motion turned on, nothing moves until they press play. `BoardViewer` still works as another name for
-`ModelViewer`.
+reduced motion turned on, nothing moves until they press play.
 
 Samples to delete once you have your own: `public/models/example-board.glb` (still PCB, used by placeholder 1)
 and `public/models/example-keyboard.glb` (animated keyboard, used by placeholder 2).

@@ -67,6 +67,8 @@ const links = [
   themeBtn?.addEventListener('click', () => {
     const next = isDark() ? 'light' : 'dark';
     root.dataset.theme = next;
+    for (const m of document.querySelectorAll('meta[name="theme-color"]'))
+      m.setAttribute('content', next === 'dark' ? '#0f1114' : '#f4f1ea');
     syncThemeLabel();
     try {
       localStorage.setItem('theme', next);

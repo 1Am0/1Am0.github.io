@@ -39,6 +39,9 @@ const projects = defineCollection({
       // (The layout field is called `pcb` because MDX reserves `layout`.)
       schematic: drawing(image),
       pcb: drawing(image),
+      // Which tab the media panel opens on (it's moved to the front). Default order: model, schematic, pcb,
+      // photo, demo.
+      firstView: z.enum(['model', 'schematic', 'pcb', 'photo', 'demo']).optional(),
       // Interactive 3D model shown on the project page (PCB, enclosure, mechanism…). `src` is a .glb under
       // public/, e.g. /models/board.glb. Animations inside the GLB get play/pause and timeline controls.
       model: z

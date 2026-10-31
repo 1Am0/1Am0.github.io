@@ -24,6 +24,16 @@ const projects = defineCollection({
       tags: z.array(z.string()).default([]),
       cover: image().optional(),
       coverAlt: z.string().optional(),
+      // Interactive 3D board shown on the project page. `src` is a .glb under public/, e.g. /models/board.glb.
+      model: z
+        .object({
+          src: z.string().regex(/\.glb$/i, 'model.src must point to a .glb file'),
+          alt: z.string().optional(),
+          caption: z.string().optional(),
+          poster: image().optional(),
+          orbit: z.string().optional(),
+        })
+        .optional(),
       repo: z.url().optional(),
       demo: z.url().optional(),
     }),

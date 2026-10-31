@@ -8,6 +8,10 @@ export default defineConfig({
   integrations: [mdx(), sitemap()],
   // The stylesheet is small, so inline it to avoid a render-blocking request.
   build: { inlineStylesheets: 'always' },
+  vite: {
+    // The 3D model viewer (three.js) is ~1 MB but only loads on pages that show a model.
+    build: { chunkSizeWarningLimit: 1200 },
+  },
   // Code blocks follow the site theme (colors are switched in global.css).
   markdown: {
     shikiConfig: {

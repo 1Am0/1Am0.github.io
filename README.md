@@ -60,6 +60,40 @@ In the repo settings, **Pages → Source** must be set to **GitHub Actions**.
    Each `##` heading becomes an entry in the page's "On this page" contents list (shown on wide screens
    once a write-up has three or more sections).
 
+## Interactive 3D board models
+
+Project pages can show a rotatable 3D model of a PCB (drag to rotate, scroll or pinch to zoom, arrow keys,
+reset / pause / fullscreen buttons).
+
+1. Export a **GLB** from your PCB tool:
+   - **KiCad 8+:** PCB Editor → File → Export → GLB.
+   - **Altium / Fusion / others:** export STEP, then convert to GLB (e.g. import into Blender and
+     File → Export → glTF 2.0 (.glb)).
+   Keep it under ~10 MB; KiCad exports of small boards are usually 1–5 MB.
+2. Put the file in `public/models/`, e.g. `public/models/weather-station.glb`.
+3. Add it to the project's frontmatter:
+
+   ```yaml
+   model:
+     src: /models/weather-station.glb
+     caption: PCB assembly / interactive 3D    # optional
+     poster: ../../assets/projects/weather-station/render.png  # optional still image shown while loading
+     orbit: 30deg 55deg auto                    # optional starting angle
+   ```
+
+   Or place one (or more) anywhere in the write-up:
+
+   ```mdx
+   import BoardViewer from '../../components/BoardViewer.astro';
+
+   <BoardViewer src="/models/weather-station.glb" alt="3D model of the weather station PCB" n={3} />
+   ```
+
+The 3D library (~1 MB) only downloads when a model scrolls into view, so pages without models stay fast. The
+model spins slowly while visible, and doesn't spin for visitors who have reduced motion turned on.
+`public/models/example-board.glb` is a sample used by the placeholder project; delete it once you have
+your own.
+
 ## Pages
 
 | Path | Source |

@@ -3,6 +3,7 @@ import { Image } from 'astro:assets';
 import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import Sheet from '../../components/Sheet.astro';
+import BoardViewer from '../../components/BoardViewer.astro';
 import SpecTable from '../../components/SpecTable.astro';
 import StatusBadge from '../../components/StatusBadge.astro';
 import { getProjects, getProjectCodes, type Project } from '../../lib/projects';
@@ -27,7 +28,7 @@ interface Props {
 }
 
 const { project, code, prev, next } = Astro.props;
-const { title, summary, tags, cover, coverAlt, repo, demo, date, draft, discipline, role, status, highlights } =
+const { title, summary, tags, cover, coverAlt, model, repo, demo, date, draft, discipline, role, status, highlights } =
   project.data;
 const { Content, headings } = await render(project);
 const toc = headings.filter((h) => h.depth === 2);
@@ -79,6 +80,19 @@ const toc = headings.filter((h) => h.depth === 2);
             </figcaption>
           </Sheet>
         </figure>
+      )
+    }
+
+    {
+      model && (
+        <BoardViewer
+          src={model.src}
+          alt={model.alt ?? `Interactive 3D model of ${title}`}
+          caption={model.caption ?? 'Interactive PCB assembly'}
+          n={cover ? 2 : 1}
+          poster={model.poster}
+          orbit={model.orbit}
+        />
       )
     }
 

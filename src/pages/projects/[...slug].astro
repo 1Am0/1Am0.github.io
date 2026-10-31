@@ -33,7 +33,7 @@ const { Content, headings } = await render(project);
 const toc = headings.filter((h) => h.depth === 2);
 ---
 
-<Base title={`${title} · ${site.name}`} description={summary}>
+<Base title={`${title} · ${site.name}`} description={summary} type="article" image={cover} imageAlt={cover ? (coverAlt ?? title) : undefined}>
   <article class="container project">
     <div class="crumbs mono-label">
       <a href="/projects/">← All projects</a>

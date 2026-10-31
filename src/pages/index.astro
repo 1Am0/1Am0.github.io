@@ -113,11 +113,14 @@ const otherHardware = hardware.filter((p) => p !== featured);
             <p>{education.details.join(' · ')}</p>
             {
               education.coursework.length > 0 && (
-                <ul class="chips" aria-label="Relevant coursework">
-                  {education.coursework.map((c) => (
-                    <li class="chip">{c}</li>
-                  ))}
-                </ul>
+                <>
+                  <span class="sr-only">Relevant coursework:</span>
+                  <ul class="chips">
+                    {education.coursework.map((c) => (
+                      <li class="chip">{c}</li>
+                    ))}
+                  </ul>
+                </>
               )
             }
           </div>

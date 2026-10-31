@@ -181,8 +181,11 @@ const { Content } = await render(project);
     border-top: 1px solid var(--line);
   }
   .prose {
-    max-width: 780px;
     margin-top: 2.5rem;
+  }
+  /* Text stays at a readable measure; framed figures use the full width. */
+  .prose > :global(:not(figure)) {
+    max-width: 780px;
   }
   .prose :global(h2) {
     font-size: 1.4rem;

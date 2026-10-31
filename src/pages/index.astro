@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import FeaturedProject from '../components/FeaturedProject.astro';
+import SpecTable from '../components/SpecTable.astro';
 import { getProjects, getProjectCodes } from '../lib/projects';
 import { site, skillGroups, experience, awards } from '../data/site';
 
@@ -37,8 +38,12 @@ const otherHardware = hardware.filter((p) => p !== featured);
             <FeaturedProject project={featured} code={codes.get(featured.id)!} />
             {otherHardware.length > 0 && (
               <div class="grid">
-                {otherHardware.map((p) => (
-                  <ProjectCard project={p} code={codes.get(p.id)!} />
+                {otherHardware.map((p, i) => (
+                  <ProjectCard
+                    project={p}
+                    code={codes.get(p.id)!}
+                    wide={i === otherHardware.length - 1 && otherHardware.length % 2 === 1}
+                  />
                 ))}
               </div>
             )}
@@ -80,31 +85,10 @@ const otherHardware = hardware.filter((p) => p !== featured);
     </div>
   </section>
 
-  <section id="skills" class="section">
-    <div class="container">
-      <p class="section-label">03 · Skills</p>
-      <h2 class="section-title">Technical skills</h2>
-      <div class="skills">
-        {
-          skillGroups.map((g) => (
-            <div class="skill-group">
-              <h3>{g.name}</h3>
-              <ul>
-                {g.items.map((s) => (
-                  <li>{s}</li>
-                ))}
-              </ul>
-            </div>
-          ))
-        }
-      </div>
-    </div>
-  </section>
-
   <section id="experience" class="section">
     <div class="container two-col">
       <div>
-        <p class="section-label">04 · Experience</p>
+        <p class="section-label">03 · Experience</p>
         <h2 class="section-title">Experience &amp; leadership</h2>
         <ol class="rows">
           {
@@ -122,53 +106,54 @@ const otherHardware = hardware.filter((p) => p !== featured);
           }
         </ol>
       </div>
-      <div>
-        <p class="section-label">05 · Recognition</p>
-        <h2 class="section-title">Awards &amp; certifications</h2>
-        <ul class="awards">
-          {
-            awards.map((a) => (
-              <li>
-                <span class="award-name">{a.url ? <a class="ext" href={a.url} rel="noreferrer">{a.name}</a> : a.name}</span>
-                <span class="award-issuer">{a.issuer}</span>
-              </li>
-            ))
-          }
-        </ul>
+      <div class="side">
+        <div>
+          <p class="section-label">04 · Recognition</p>
+          <h2 class="section-title">Awards</h2>
+          <SpecTable rows={awards.map((a) => [a.issuer, a.name, a.url ?? undefined])} />
+        </div>
+        <div id="skills">
+          <p class="section-label">05 · Skills</p>
+          <h2 class="section-title">Technical skills</h2>
+          <SpecTable rows={skillGroups.map((g) => [g.name, g.items.join(' · ')])} />
+        </div>
       </div>
     </div>
   </section>
 
   <section id="about" class="section">
-    <div class="container about">
-      <p class="section-label">06 · About</p>
-      <h2 class="section-title">About me</h2>
-      <p>
-        I'm a student at {site.school} in San Diego, working toward a career in electrical engineering. I like
-        projects that cross the hardware–software boundary: sketching a circuit, getting it working on a breadboard
-        or PCB, and writing the firmware and tools around it. I picked up my programming background through AP
-        Computer Science and personal projects, and I now use it to build and test hardware.
-      </p>
-      <p>
-        Outside engineering I'm a nationally competing, Expert-rated chess player, a three-year varsity wrestler,
-        and a pianist. I also tutor math, because explaining something clearly is the best test of whether I
-        understand it.
-      </p>
-    </div>
-  </section>
-
-  <section id="contact" class="section contact">
-    <div class="container">
-      <p class="section-label">07 · Contact</p>
-      <h2 class="section-title">Get in touch</h2>
-      <p class="contact-lead">
-        Interested in an internship, research opportunity, or collaboration? Email me at{' '}
-        <a href={`mailto:${site.email}`}>{site.email}</a>.
-      </p>
-      <div class="actions">
-        <a class="btn btn-primary" href={`mailto:${site.email}`}>Email me</a>
-        <a class="btn ext" href={site.linkedin} rel="noreferrer">LinkedIn</a>
-        <a class="btn ext" href={site.github} rel="noreferrer">GitHub</a>
+    <div class="container two-col">
+      <div>
+        <p class="section-label">06 · About</p>
+        <h2 class="section-title">About me</h2>
+        <p class="about-text">
+          I like work that crosses the hardware–software line: sketching a circuit, getting it running on a
+          breadboard or PCB, then writing the firmware and tools around it. Outside engineering I'm an Expert-rated
+          chess player, a varsity wrestler and a pianist, and I tutor math.
+        </p>
+        <div id="contact" class="contact">
+          <p class="about-text">
+            Looking for internship, research or collaboration opportunities. The fastest way to reach me is email.
+          </p>
+          <div class="actions">
+            <a class="btn btn-primary" href={`mailto:${site.email}`}>Email me</a>
+            {site.resume && <a class="btn" href={site.resume}>Résumé (PDF)</a>}
+          </div>
+        </div>
+      </div>
+      <div class="side facts">
+        <SpecTable
+          caption="Quick facts"
+          rows={[
+            ['School', site.school],
+            ['Location', site.location],
+            ['Focus', 'Embedded systems · Circuit design'],
+            ['Also', 'Chess · Wrestling · Piano · Tutoring'],
+            ['Email', site.email, `mailto:${site.email}`],
+            ['LinkedIn', 'anthony-mokhov', site.linkedin],
+            ['GitHub', '1Am0', site.github],
+          ]}
+        />
       </div>
     </div>
   </section>
@@ -188,7 +173,7 @@ const otherHardware = hardware.filter((p) => p !== featured);
   .grid {
     margin-top: 1.25rem;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 1.25rem;
   }
   .empty {
@@ -198,7 +183,7 @@ const otherHardware = hardware.filter((p) => p !== featured);
     margin: 0;
   }
   .sub {
-    margin-top: 4rem;
+    margin-top: 3.5rem;
   }
   .rows {
     list-style: none;
@@ -253,70 +238,29 @@ const otherHardware = hardware.filter((p) => p !== featured);
     font-weight: 500;
     color: var(--accent);
   }
-  .skills {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
-    gap: 1rem;
-  }
-  .skill-group {
-    background: var(--surface);
-    border: 1px solid var(--line);
-    padding: 1.25rem;
-  }
-  .skill-group h3 {
-    font-family: var(--font-mono);
-    font-size: 0.82rem;
-    font-weight: 500;
-    color: var(--accent);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin-bottom: 0.75rem;
-  }
-  .skill-group ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    gap: 0.4rem;
-    font-size: 0.95rem;
-  }
-
   .two-col {
     display: grid;
     grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
     gap: 3rem;
   }
-  .awards {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    border-top: 1px solid var(--line);
+  .side {
+    display: grid;
+    gap: 3rem;
+    align-content: start;
   }
-  .awards li {
-    display: flex;
-    flex-direction: column;
-    padding: 0.9rem 0;
-    border-bottom: 1px solid var(--border);
-  }
-  .award-name {
-    font-weight: 600;
-  }
-  .award-issuer {
-    font-size: 0.88rem;
-    color: var(--text-muted);
-  }
-
-  .about p:not(.section-label) {
-    max-width: 44rem;
-    color: var(--text-muted);
-    font-size: 1.05rem;
-    margin: 0 0 1rem;
-  }
-  .contact-lead {
+  .about-text {
+    max-width: 36rem;
     color: var(--text-muted);
     font-size: 1.05rem;
     margin: 0 0 1.5rem;
-    overflow-wrap: anywhere;
+  }
+  .contact {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--line);
+  }
+  .facts {
+    padding-top: 2.6rem;
   }
   .actions {
     display: flex;
@@ -330,6 +274,12 @@ const otherHardware = hardware.filter((p) => p !== featured);
     }
     .row {
       grid-template-columns: 1fr;
+    }
+    .grid {
+      grid-template-columns: 1fr;
+    }
+    .facts {
+      padding-top: 0;
     }
   }
 </style>

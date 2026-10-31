@@ -1,7 +1,7 @@
 ---
 // Key/value "title block" table, styled after the title block on an engineering drawing.
 interface Props {
-  rows: [label: string, value: string | undefined][];
+  rows: [label: string, value: string | undefined, href?: string][];
   caption?: string;
   // Narrow label column, for numbered lists like design notes.
   numbered?: boolean;
@@ -16,10 +16,18 @@ const { rows, caption, numbered = false } = Astro.props;
     {
       rows
         .filter(([, v]) => v)
-        .map(([label, value]) => (
+        .map(([label, value, href]) => (
           <tr>
             <th scope="row">{label}</th>
-            <td>{value}</td>
+            <td>
+              {href ? (
+                <a class:list={{ ext: !href.startsWith('mailto:') }} href={href} rel="noreferrer">
+                  {value}
+                </a>
+              ) : (
+                value
+              )}
+            </td>
           </tr>
         ))
     }
@@ -65,5 +73,6 @@ const { rows, caption, numbered = false } = Astro.props;
   td {
     font-family: var(--font-mono);
     font-size: 0.8rem;
+    overflow-wrap: anywhere;
   }
 </style>

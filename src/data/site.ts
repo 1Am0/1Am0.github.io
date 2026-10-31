@@ -46,7 +46,7 @@ export const awards = [
   { name: 'AP Scholar with Distinction', issuer: 'College Board', url: null },
   {
     name: 'Java Programming',
-    issuer: 'Credly certification',
+    issuer: 'Credly',
     url: 'https://www.credly.com/badges/010ae9ae-9edf-4365-aa7b-fcfdddcd6881/public_url',
   },
   { name: 'US Chess Expert', issuer: 'US Chess Federation', url: null },

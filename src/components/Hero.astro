@@ -13,6 +13,15 @@ import SpecTable from './SpecTable.astro';
         Student at {site.school} working toward electrical engineering. I design small electronic systems and
         write the firmware and software that run them.
       </p>
+      {
+        site.now && (
+          <p class="now">
+            <span class="led" aria-hidden="true" />
+            <span class="mono-label">Now</span>
+            {site.now}
+          </p>
+        )
+      }
       <div class="actions">
         <a class="btn btn-primary" href="#projects">View projects</a>
         {site.resume && <a class="btn" href={site.resume}>Résumé (PDF)</a>}
@@ -102,6 +111,25 @@ import SpecTable from './SpecTable.astro';
     font-size: 1.05rem;
     max-width: 34rem;
     margin: 0 0 2rem;
+  }
+  .now {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.6rem;
+    margin: -0.75rem 0 2rem;
+    font-size: 0.95rem;
+  }
+  .led {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--trace);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--trace) 20%, transparent);
+    align-self: center;
+  }
+  .now .mono-label {
+    color: var(--trace);
   }
   .actions {
     display: flex;

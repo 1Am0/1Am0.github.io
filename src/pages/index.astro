@@ -5,7 +5,8 @@ import ProjectCard from '../components/ProjectCard.astro';
 import FeaturedProject from '../components/FeaturedProject.astro';
 import SpecTable from '../components/SpecTable.astro';
 import { getProjects, getProjectCodes } from '../lib/projects';
-import { site, skillGroups, experience, awards } from '../data/site';
+import { Image } from 'astro:assets';
+import { site, skillGroups, experience, awards, education } from '../data/site';
 
 const hardware = await getProjects('hardware');
 const software = await getProjects('software');
@@ -82,23 +83,44 @@ const otherHardware = hardware.filter((p) => p !== featured);
           ))
         }
       </ul>
+      <a class="archive-link" href="/projects/">View the full project archive <span aria-hidden="true">→</span></a>
     </div>
   </section>
 
   <section id="experience" class="section">
     <div class="container two-col">
       <div>
-        <p class="section-label">03 · Experience</p>
-        <h2 class="section-title">Experience &amp; leadership</h2>
+        <p class="section-label">03 · Background</p>
+        <h2 class="section-title">Education &amp; experience</h2>
+        <h3 class="sub-label mono-label">Education</h3>
+        <div class="row">
+          <span class="mono-label row-code">{education.graduation ?? 'Current'}</span>
+          <div class="row-main">
+            <h4>
+              {education.school} <span class="org">· {education.location}</span>
+            </h4>
+            <p>{education.details.join(' · ')}</p>
+            {
+              education.coursework.length > 0 && (
+                <ul class="chips" aria-label="Relevant coursework">
+                  {education.coursework.map((c) => (
+                    <li class="chip">{c}</li>
+                  ))}
+                </ul>
+              )
+            }
+          </div>
+        </div>
+        <h3 class="sub-label mono-label">Experience &amp; leadership</h3>
         <ol class="rows">
           {
             experience.map((e) => (
               <li class="row">
                 <span class="mono-label row-code">{e.period}</span>
                 <div class="row-main">
-                  <h3>
+                  <h4>
                     {e.role} <span class="org">· {e.org}</span>
-                  </h3>
+                  </h4>
                   <p>{e.detail}</p>
                 </div>
               </li>
@@ -142,6 +164,13 @@ const otherHardware = hardware.filter((p) => p !== featured);
         </div>
       </div>
       <div class="side facts">
+        {
+          site.photo && (
+            <figure class="photo">
+              <Image src={site.photo} alt={`Portrait of ${site.name}`} widths={[320, 640]} sizes="320px" />
+            </figure>
+          )
+        }
         <SpecTable
           caption="Quick facts"
           rows={[
@@ -209,9 +238,11 @@ const otherHardware = hardware.filter((p) => p !== featured);
     display: grid;
     gap: 0.4rem;
   }
-  .row h3 {
+  .row :is(h3, h4) {
+    margin: 0;
     font-size: 1.05rem;
     font-weight: 600;
+    line-height: 1.3;
   }
   .row h3 a {
     color: var(--text);
@@ -253,6 +284,42 @@ const otherHardware = hardware.filter((p) => p !== featured);
     color: var(--text-muted);
     font-size: 1.05rem;
     margin: 0 0 1.5rem;
+  }
+  .sub-label {
+    margin: 0 0 0.25rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .sub-label ~ .sub-label {
+    margin-top: 2rem;
+  }
+  .archive-link {
+    display: inline-flex;
+    gap: 0.4rem;
+    margin-top: 1.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+  .archive-link span {
+    transition: transform 0.15s;
+  }
+  .archive-link:hover span {
+    transform: translateX(3px);
+  }
+  .photo {
+    margin: 0;
+    max-width: 14rem;
+    padding: 6px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+  }
+  .photo :global(img) {
+    aspect-ratio: 1;
+    object-fit: cover;
+    filter: grayscale(0.15);
   }
   .contact {
     margin-top: 2rem;

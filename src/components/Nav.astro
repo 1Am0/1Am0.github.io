@@ -49,9 +49,15 @@ const links = [
   const isDark = () =>
     root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
 
-  document.querySelector('.theme-btn')?.addEventListener('click', () => {
+  const themeBtn = document.querySelector<HTMLButtonElement>('.theme-btn');
+  const syncThemeLabel = () =>
+    themeBtn?.setAttribute('aria-label', isDark() ? 'Switch to light theme' : 'Switch to dark theme');
+  syncThemeLabel();
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', syncThemeLabel);
+  themeBtn?.addEventListener('click', () => {
     const next = isDark() ? 'light' : 'dark';
     root.dataset.theme = next;
+    syncThemeLabel();
     try {
       localStorage.setItem('theme', next);
     } catch {}
@@ -63,9 +69,19 @@ const links = [
     menuBtn?.setAttribute('aria-expanded', String(open));
     links?.classList.toggle('open', open);
   };
-  menuBtn?.addEventListener('click', () => setOpen(menuBtn.getAttribute('aria-expanded') !== 'true'));
+  const isOpen = () => menuBtn?.getAttribute('aria-expanded') === 'true';
+  menuBtn?.addEventListener('click', () => setOpen(!isOpen()));
   links?.addEventListener('click', (e) => {
     if ((e.target as HTMLElement).closest('a')) setOpen(false);
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && isOpen()) {
+      setOpen(false);
+      menuBtn?.focus();
+    }
+  });
+  document.addEventListener('click', (e) => {
+    if (isOpen() && !(e.target as HTMLElement).closest('.nav')) setOpen(false);
   });
 
   // Highlight the nav link for the section currently in view (home page only).

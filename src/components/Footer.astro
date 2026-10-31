@@ -1,27 +1,70 @@
 ---
 import { site } from '../data/site';
-const year = new Date().getFullYear();
+
+const built = new Date();
+const year = built.getFullYear();
+const revision = built.toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
 ---
 
 <footer class="footer">
-  <div class="container footer-inner">
-    <p>© {year} {site.name}</p>
-    <ul>
-      <li><a href={site.github} rel="noreferrer">GitHub</a></li>
-      <li><a href={site.linkedin} rel="noreferrer">LinkedIn</a></li>
-      <li><a href={`mailto:${site.email}`}>Email</a></li>
-    </ul>
+  <div class="container">
+    <table class="block">
+      <caption class="sr-only">Site information</caption>
+      <tbody>
+        <tr>
+          <th scope="row">Drawn by</th>
+          <td>{site.name}</td>
+          <th scope="row" class="hide-sm">Rev.</th>
+          <td class="hide-sm">Updated {revision}</td>
+          <th scope="row" class="hide-sm">Built with</th>
+          <td class="hide-sm">Astro · MDX</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="row">
+      <p>© {year} {site.name}</p>
+      <ul>
+        <li><a href={site.github} rel="noreferrer">GitHub</a></li>
+        <li><a href={site.linkedin} rel="noreferrer">LinkedIn</a></li>
+        <li><a href={`mailto:${site.email}`}>Email</a></li>
+        <li><a href="#top" class="top">Back to top ↑</a></li>
+      </ul>
+    </div>
   </div>
 </footer>
 
 <style>
   .footer {
     border-top: 1px solid var(--border);
-    padding-block: 2rem;
+    padding-block: 2rem 2.5rem;
     font-size: 0.88rem;
     color: var(--text-muted);
   }
-  .footer-inner {
+  .block {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+  }
+  .block th,
+  .block td {
+    border: 1px solid var(--line);
+    padding: 0.45rem 0.6rem;
+    text-align: left;
+  }
+  .block th {
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    white-space: nowrap;
+    width: 1%;
+  }
+  .block td {
+    color: var(--text);
+  }
+  .row {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
@@ -32,7 +75,8 @@ const year = new Date().getFullYear();
   }
   ul {
     display: flex;
-    gap: 1.25rem;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
     list-style: none;
     margin: 0;
     padding: 0;
@@ -43,5 +87,10 @@ const year = new Date().getFullYear();
   }
   a:hover {
     color: var(--accent);
+  }
+  @media (max-width: 640px) {
+    .hide-sm {
+      display: none;
+    }
   }
 </style>

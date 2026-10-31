@@ -8,6 +8,13 @@ export default defineConfig({
   integrations: [mdx(), sitemap()],
   // The stylesheet is small, so inline it to avoid a render-blocking request.
   build: { inlineStylesheets: 'always' },
+  // Code blocks follow the site theme (colors are switched in global.css).
+  markdown: {
+    shikiConfig: {
+      themes: { light: 'github-light', dark: 'github-dark' },
+      defaultColor: false,
+    },
+  },
   // Fonts are downloaded at build time and served from this site (no third-party requests).
   fonts: [
     {

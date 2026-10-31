@@ -216,9 +216,13 @@ const toc = headings.filter((h) => h.depth === 2);
   .cover :global(img) {
     width: 100%;
   }
+  .cover figcaption span:last-child {
+    white-space: nowrap;
+  }
   .cover figcaption {
     display: flex;
     justify-content: space-between;
+    gap: 1rem;
     padding: 0.6rem 0.75rem;
     border-top: 1px solid var(--line);
   }
@@ -313,6 +317,10 @@ const toc = headings.filter((h) => h.depth === 2);
     padding: 0.1em 0.35em;
     border-radius: 4px;
   }
+  .prose :global(pre.astro-code),
+  .prose :global(pre.astro-code span) {
+    background-color: var(--surface) !important;
+  }
   .prose :global(pre) {
     padding: 1rem;
     border: 1px solid var(--line);
@@ -324,6 +332,8 @@ const toc = headings.filter((h) => h.depth === 2);
     padding: 0;
   }
   .prose :global(table) {
+    background: var(--surface);
+    font-variant-numeric: tabular-nums;
     display: block;
     width: 100%;
     overflow-x: auto;

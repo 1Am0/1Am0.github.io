@@ -12,7 +12,20 @@ npm install
 npm run dev       # http://localhost:4321 (drafts visible)
 npm run build     # type-check + production build into dist/ (drafts hidden)
 npm run preview   # serve the production build
+npm run fresh     # clear all caches, then start the dev server
+npm run clean     # just clear caches (.astro, node_modules/.astro, node_modules/.vite, dist)
 ```
+
+**After pulling new changes**, stop the dev server and run:
+
+```bash
+npm install
+npm run fresh
+```
+
+`npm install` picks up any new packages. `npm run fresh` throws away Astro's cached content data, so changes
+to project fields (like a new frontmatter option) show up straight away. The scripts work in PowerShell, cmd,
+macOS and Linux.
 
 Pushing to `main` deploys automatically through `.github/workflows/deploy.yml`.
 In the repo settings, **Pages → Source** must be set to **GitHub Actions**.

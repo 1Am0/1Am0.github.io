@@ -2,11 +2,15 @@
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import ProjectCard from '../components/ProjectCard.astro';
-import { getProjects } from '../lib/projects';
+import FeaturedProject from '../components/FeaturedProject.astro';
+import { getProjects, getProjectCodes } from '../lib/projects';
 import { site, skillGroups, experience, awards } from '../data/site';
 
 const hardware = await getProjects('hardware');
 const software = await getProjects('software');
+const codes = await getProjectCodes();
+const featured = hardware.find((p) => p.data.featured) ?? hardware[0];
+const otherHardware = hardware.filter((p) => p !== featured);
 ---
 
 <Base>
@@ -14,37 +18,61 @@ const software = await getProjects('software');
 
   <section id="projects" class="section">
     <div class="container">
-      <p class="section-label">01 · Hardware</p>
-      <h2 class="section-title">Electrical engineering projects</h2>
+      <div class="section-head">
+        <div>
+          <p class="section-label">01 · Selected work</p>
+          <h2 class="section-title">Electrical engineering projects</h2>
+        </div>
+        {
+          hardware.length > 0 && (
+            <p class="mono-label count">
+              {String(hardware.length).padStart(2, '0')} hardware · {String(software.length).padStart(2, '0')} software
+            </p>
+          )
+        }
+      </div>
       {
-        hardware.length > 0 ? (
-          <div class="grid">
-            {hardware.map((p, i) => (
-              <ProjectCard project={p} index={i} />
-            ))}
-          </div>
+        featured ? (
+          <>
+            <FeaturedProject project={featured} code={codes.get(featured.id)!} />
+            {otherHardware.length > 0 && (
+              <div class="grid">
+                {otherHardware.map((p) => (
+                  <ProjectCard project={p} code={codes.get(p.id)!} />
+                ))}
+              </div>
+            )}
+          </>
         ) : (
           <p class="empty">Hardware write-ups are in progress. Check back soon.</p>
         )
       }
 
-      <p class="section-label sub">02 · Software</p>
-      <h2 class="section-title">Software projects</h2>
-      <ul class="sw-list">
+      <div class="section-head sub">
+        <div>
+          <p class="section-label">02 · Software</p>
+          <h2 class="section-title">Software projects</h2>
+        </div>
+      </div>
+      <ul class="rows">
         {
           software.map((p) => (
-            <li>
-              <div>
+            <li class="row">
+              <span class="mono-label row-code">{codes.get(p.id)}</span>
+              <div class="row-main">
                 <h3>
-                  <a href={`/projects/${p.id}/`}>{p.data.title}</a>
+                  <a href={`/projects/${p.id}/`}>
+                    {p.data.title}
+                    <span class="arrow" aria-hidden="true">→</span>
+                  </a>
                 </h3>
                 <p>{p.data.summary}</p>
+                <ul class="chips">
+                  {p.data.tags.map((t) => (
+                    <li class="chip">{t}</li>
+                  ))}
+                </ul>
               </div>
-              <ul class="chips">
-                {p.data.tags.map((t) => (
-                  <li class="chip">{t}</li>
-                ))}
-              </ul>
             </li>
           ))
         }
@@ -78,16 +106,17 @@ const software = await getProjects('software');
       <div>
         <p class="section-label">04 · Experience</p>
         <h2 class="section-title">Experience &amp; leadership</h2>
-        <ol class="timeline">
+        <ol class="rows">
           {
             experience.map((e) => (
-              <li>
-                <div class="tl-head">
-                  <h3>{e.role}</h3>
-                  <span class="period">{e.period}</span>
+              <li class="row">
+                <span class="mono-label row-code">{e.period}</span>
+                <div class="row-main">
+                  <h3>
+                    {e.role} <span class="org">· {e.org}</span>
+                  </h3>
+                  <p>{e.detail}</p>
                 </div>
-                <p class="org">{e.org}</p>
-                <p>{e.detail}</p>
               </li>
             ))
           }
@@ -100,7 +129,7 @@ const software = await getProjects('software');
           {
             awards.map((a) => (
               <li>
-                <span class="award-name">{a.url ? <a href={a.url} rel="noreferrer">{a.name}</a> : a.name}</span>
+                <span class="award-name">{a.url ? <a class="ext" href={a.url} rel="noreferrer">{a.name}</a> : a.name}</span>
                 <span class="award-issuer">{a.issuer}</span>
               </li>
             ))
@@ -138,63 +167,92 @@ const software = await getProjects('software');
       </p>
       <div class="actions">
         <a class="btn btn-primary" href={`mailto:${site.email}`}>Email me</a>
-        <a class="btn" href={site.linkedin} rel="noreferrer">LinkedIn</a>
-        <a class="btn" href={site.github} rel="noreferrer">GitHub</a>
+        <a class="btn ext" href={site.linkedin} rel="noreferrer">LinkedIn</a>
+        <a class="btn ext" href={site.github} rel="noreferrer">GitHub</a>
       </div>
     </div>
   </section>
 </Base>
 
 <style>
+  .section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .count {
+    margin: 0 0 2rem;
+  }
   .grid {
+    margin-top: 1.25rem;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
     gap: 1.25rem;
   }
   .empty {
     color: var(--text-muted);
-    border: 1px dashed var(--border);
-    border-radius: var(--radius);
+    border: 1px dashed var(--line);
     padding: 2rem;
     margin: 0;
   }
   .sub {
     margin-top: 4rem;
   }
-  .sw-list {
+  .rows {
     list-style: none;
     margin: 0;
     padding: 0;
-    border-top: 1px solid var(--border);
   }
-  .sw-list > li {
+  .row {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 0.75rem 2rem;
-    align-items: center;
-    padding: 1.25rem 0;
-    border-bottom: 1px solid var(--border);
+    grid-template-columns: 9rem minmax(0, 1fr);
+    gap: 0.4rem 1.5rem;
+    padding: 1.25rem 1rem;
+    margin-inline: -1rem;
+    border-radius: 8px;
+    transition: background 0.15s;
   }
-  .sw-list h3 {
+  .row:hover {
+    background: var(--surface);
+  }
+  .row-code {
+    padding-top: 0.3rem;
+  }
+  .row-main {
+    display: grid;
+    gap: 0.4rem;
+  }
+  .row h3 {
     font-size: 1.05rem;
-    margin-bottom: 0.25rem;
+    font-weight: 600;
   }
-  .sw-list h3 a {
+  .row h3 a {
     color: var(--text);
     text-decoration: none;
   }
-  .sw-list h3 a:hover {
+  .row h3 a:hover,
+  .row:hover h3 a {
     color: var(--accent);
   }
-  .sw-list p {
+  .arrow {
+    display: inline-block;
+    margin-left: 0.3rem;
+    transition: transform 0.15s;
+  }
+  .row:hover .arrow {
+    transform: translateX(3px);
+  }
+  .row p {
     margin: 0;
     color: var(--text-muted);
     font-size: 0.95rem;
   }
-  .sw-list .chips {
-    justify-content: flex-end;
+  .org {
+    font-weight: 500;
+    color: var(--accent);
   }
-
   .skills {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
@@ -202,8 +260,7 @@ const software = await getProjects('software');
   }
   .skill-group {
     background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
+    border: 1px solid var(--line);
     padding: 1.25rem;
   }
   .skill-group h3 {
@@ -229,60 +286,11 @@ const software = await getProjects('software');
     grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
     gap: 3rem;
   }
-  .timeline {
-    list-style: none;
-    margin: 0;
-    padding: 0 0 0 1.25rem;
-    border-left: 2px solid var(--border);
-    display: grid;
-    gap: 1.75rem;
-  }
-  .timeline li {
-    position: relative;
-  }
-  .timeline li::before {
-    content: '';
-    position: absolute;
-    left: calc(-1.25rem - 6px);
-    top: 0.4rem;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: var(--bg);
-    border: 2px solid var(--accent);
-  }
-  .tl-head {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 0.25rem 1rem;
-  }
-  .timeline h3 {
-    font-size: 1.02rem;
-  }
-  .period {
-    font-family: var(--font-mono);
-    font-size: 0.78rem;
-    color: var(--text-muted);
-  }
-  .org {
-    color: var(--accent);
-    font-weight: 500;
-    font-size: 0.92rem;
-    margin: 0.1rem 0 0.35rem;
-  }
-  .timeline p {
-    margin: 0;
-  }
-  .timeline p:last-child {
-    color: var(--text-muted);
-    font-size: 0.95rem;
-  }
   .awards {
     list-style: none;
     margin: 0;
     padding: 0;
-    border-top: 1px solid var(--border);
+    border-top: 1px solid var(--line);
   }
   .awards li {
     display: flex;
@@ -320,11 +328,8 @@ const software = await getProjects('software');
     .two-col {
       grid-template-columns: 1fr;
     }
-    .sw-list > li {
+    .row {
       grid-template-columns: 1fr;
-    }
-    .sw-list .chips {
-      justify-content: flex-start;
     }
   }
 </style>

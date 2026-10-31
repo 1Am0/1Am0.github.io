@@ -9,6 +9,12 @@ const projects = defineCollection({
       title: z.string(),
       summary: z.string(),
       category: z.enum(['hardware', 'software']),
+      // e.g. "Embedded systems", "Power electronics", "Signal processing".
+      discipline: z.string(),
+      role: z.string().default('Independent project'),
+      status: z.enum(['complete', 'in-progress']).default('complete'),
+      // Short design notes shown on the featured card and project spec sheet.
+      highlights: z.array(z.string()).default([]),
       // Lower numbers sort first within a category.
       order: z.number().default(100),
       featured: z.boolean().default(false),

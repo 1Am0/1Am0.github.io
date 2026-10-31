@@ -1,0 +1,51 @@
+---
+interface Props {
+  status: 'complete' | 'in-progress';
+  draft?: boolean;
+}
+
+const { status, draft = false } = Astro.props;
+const label = draft ? 'Draft' : status === 'complete' ? 'Complete' : 'In progress';
+---
+
+<span class:list={['status', { live: status === 'in-progress' && !draft, draft }]}>
+  <span class="led" aria-hidden="true"></span>{label}
+</span>
+
+<style>
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-shrink: 0;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+  .led {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--trace);
+  }
+  .live .led {
+    background: var(--accent);
+    animation: blink 1.6s ease-in-out infinite;
+  }
+  .draft .led {
+    background: var(--text-faint);
+  }
+  @keyframes blink {
+    50% {
+      opacity: 0.3;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .live .led {
+      animation: none;
+    }
+  }
+</style>

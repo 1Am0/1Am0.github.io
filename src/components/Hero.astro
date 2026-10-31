@@ -1,25 +1,29 @@
 ---
 import { site } from '../data/site';
+import Sheet from './Sheet.astro';
+import SpecTable from './SpecTable.astro';
 ---
 
 <section class="hero">
   <div class="container hero-inner">
     <div class="copy">
-      <p class="eyebrow">{site.school} · {site.location}</p>
+      <p class="eyebrow"><span class="dot" aria-hidden="true"></span>Electrical engineering · {site.location}</p>
       <h1>{site.name}</h1>
-      <p class="role">Aspiring electrical engineer</p>
-      <p class="tagline">
-        {site.tagline} I design and build small electronic systems, then write the code that brings them to life.
+            <p class="tagline">
+        Student at {site.school} working toward electrical engineering. I design small electronic systems and
+        write the firmware and software that run them.
       </p>
       <div class="actions">
         <a class="btn btn-primary" href="#projects">View projects</a>
         {site.resume && <a class="btn" href={site.resume}>Résumé (PDF)</a>}
-        <a class="btn" href={site.github} rel="noreferrer">GitHub</a>
-        <a class="btn" href={site.linkedin} rel="noreferrer">LinkedIn</a>
+        <a class="btn ext" href={site.github} rel="noreferrer">GitHub</a>
+        <a class="btn ext" href={site.linkedin} rel="noreferrer">LinkedIn</a>
       </div>
     </div>
 
+    <Sheet class="hero-sheet">
     <figure class="schematic" aria-hidden="true">
+      <p class="fig mono-label">Fig. 0 — RC low-pass filter</p>
       <svg viewBox="0 0 320 200" role="presentation">
         <g class="wire">
           <path d="M20 60 H80"></path>
@@ -46,18 +50,23 @@ import { site } from '../data/site';
         <text x="8" y="184">GND</text>
         <path class="pulse" d="M20 60 H80 l6 -10 l12 20 l12 -20 l12 20 l12 -20 l6 10 H300"></path>
       </svg>
-      <figcaption>fc = 1 / (2πRC) ≈ 159 Hz</figcaption>
+      <div class="title-block">
+        <SpecTable
+          rows={[
+            ['Title', 'RC low-pass'],
+            ['Cutoff', '1 / 2πRC ≈ 159 Hz'],
+            ['Dwg no.', 'AM-000'],
+          ]}
+        />
+      </div>
     </figure>
+    </Sheet>
   </div>
 </section>
 
 <style>
   .hero {
-    background-image:
-      linear-gradient(var(--grid) 1px, transparent 1px),
-      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-    background-size: 24px 24px;
-    padding-block: 4.5rem 5rem;
+    padding-block: 5rem 5.5rem;
   }
   .hero-inner {
     display: grid;
@@ -66,20 +75,27 @@ import { site } from '../data/site';
     align-items: center;
   }
   .eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     font-family: var(--font-mono);
-    font-size: 0.8rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
     color: var(--text-muted);
-    margin: 0 0 1rem;
+    margin: 0 0 1.25rem;
+  }
+  .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
   }
   h1 {
-    font-size: clamp(2.4rem, 6vw, 3.6rem);
-    letter-spacing: -0.03em;
-  }
-  .role {
-    font-size: clamp(1.15rem, 2.4vw, 1.4rem);
-    font-weight: 600;
-    color: var(--accent);
-    margin: 0.5rem 0 1rem;
+    font-size: clamp(2.6rem, 7vw, 4.4rem);
+    letter-spacing: -0.04em;
+    line-height: 1;
+    margin-bottom: 1.25rem;
   }
   .tagline {
     color: var(--text-muted);
@@ -94,11 +110,18 @@ import { site } from '../data/site';
   }
   .schematic {
     margin: 0;
-    padding: 1.25rem;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
+    padding: 1rem 1rem 0;
+  }
+  .fig {
+    margin: 0 0 1rem;
+  }
+  .title-block {
+    margin: 1.25rem -1rem 0;
+    border-top: 1px solid var(--line);
+  }
+  .title-block :global(table) {
+    margin: -1px;
+    width: calc(100% + 2px);
   }
   svg {
     width: 100%;
@@ -136,14 +159,6 @@ import { site } from '../data/site';
     stroke-linecap: round;
     stroke-dasharray: 18 400;
     animation: flow 3.2s linear infinite;
-  }
-  figcaption {
-    font-family: var(--font-mono);
-    font-size: 0.78rem;
-    color: var(--text-muted);
-    border-top: 1px dashed var(--border);
-    margin-top: 1rem;
-    padding-top: 0.75rem;
   }
   @keyframes flow {
     from {

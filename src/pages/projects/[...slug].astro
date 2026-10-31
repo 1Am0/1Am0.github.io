@@ -2,54 +2,91 @@
 import { Image } from 'astro:assets';
 import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
-import { getProjects, type Project } from '../../lib/projects';
+import Sheet from '../../components/Sheet.astro';
+import SpecTable from '../../components/SpecTable.astro';
+import StatusBadge from '../../components/StatusBadge.astro';
+import { getProjects, getProjectCodes, type Project } from '../../lib/projects';
 
 export async function getStaticPaths() {
   const hardware = await getProjects('hardware');
   const software = await getProjects('software');
   const ordered = [...hardware, ...software];
+  const codes = await getProjectCodes();
   return ordered.map((project, i) => ({
     params: { slug: project.id },
-    props: { project, prev: ordered[i - 1], next: ordered[i + 1] },
+    props: { project, code: codes.get(project.id)!, prev: ordered[i - 1], next: ordered[i + 1] },
   }));
 }
 
 interface Props {
   project: Project;
+  code: string;
   prev?: Project;
   next?: Project;
 }
 
-const { project, prev, next } = Astro.props;
-const { title, summary, category, tags, cover, coverAlt, repo, demo, date, draft } = project.data;
+const { project, code, prev, next } = Astro.props;
+const { title, summary, tags, cover, coverAlt, repo, demo, date, draft, discipline, role, status, highlights } =
+  project.data;
 const { Content } = await render(project);
 ---
 
 <Base title={`${title} · Anthony Mokhov`} description={summary}>
   <article class="container project">
-    <a class="back" href="/#projects">← All projects</a>
-    <header>
-      <p class="section-label">
-        {category === 'hardware' ? 'Hardware' : 'Software'}
-        {date && <> · {date.getFullYear()}</>}
-        {draft && <> · Draft</>}
-      </p>
-      <h1>{title}</h1>
-      <p class="summary">{summary}</p>
-      <ul class="chips">
-        {tags.map((t) => <li class="chip">{t}</li>)}
-      </ul>
-      {
-        (repo || demo) && (
-          <div class="links">
-            {repo && <a class="btn" href={repo} rel="noreferrer">Source code</a>}
-            {demo && <a class="btn btn-primary" href={demo} rel="noreferrer">Live demo</a>}
-          </div>
-        )
-      }
+    <div class="crumbs mono-label">
+      <a href="/#projects">← All projects</a>
+      <span>{code} / {discipline}</span>
+    </div>
+    <header class="head">
+      <div>
+        <p class="kicker mono-label"><span>{code}</span> / {discipline}</p>
+        <h1>{title}</h1>
+        <p class="summary">{summary}</p>
+        {
+          (repo || demo) && (
+            <div class="links">
+              {demo && <a class="btn btn-primary ext" href={demo} rel="noreferrer">Live demo</a>}
+              {repo && <a class="btn ext" href={repo} rel="noreferrer">Source on GitHub</a>}
+            </div>
+          )
+        }
+      </div>
+      <aside class="spec" aria-label="Project details">
+        <SpecTable
+          caption="Title block"
+          rows={[
+            ['Drawing no.', code],
+            ['Discipline', discipline],
+            ['Role', role],
+            ['Tools', tags.join(' / ')],
+            ['Date', date?.getFullYear().toString()],
+          ]}
+        />
+        <div class="status-row"><StatusBadge status={status} draft={draft} /></div>
+      </aside>
     </header>
 
-    {cover && <Image class="cover" src={cover} alt={coverAlt ?? ''} widths={[720, 1080, 1600]} sizes="(max-width: 1080px) 100vw, 1080px" />}
+    {
+      cover && (
+        <figure class="cover">
+          <Sheet>
+            <Image src={cover} alt={coverAlt ?? ''} widths={[720, 1080, 1600]} sizes="(max-width: 1080px) 100vw, 1000px" />
+            <figcaption class="mono-label">
+              <span>Fig. 01 — {coverAlt ?? title}</span>
+              <span>{code}</span>
+            </figcaption>
+          </Sheet>
+        </figure>
+      )
+    }
+
+    {
+      highlights.length > 0 && (
+        <section class="notes" aria-label="Design notes">
+          <SpecTable caption="Design notes" numbered rows={highlights.map((h, i) => [String(i + 1).padStart(2, '0'), h])} />
+        </section>
+      )
+    }
 
     <div class="prose">
       <Content />
@@ -64,23 +101,66 @@ const { Content } = await render(project);
 
 <style>
   .project {
-    max-width: 780px;
-    padding-block: 2.5rem 4rem;
+    padding-block: 1.5rem 4rem;
   }
-  .back {
-    display: inline-block;
-    font-size: 0.9rem;
+  .crumbs {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 3rem;
+  }
+  .crumbs a {
+    color: var(--text);
     text-decoration: none;
-    margin-bottom: 2rem;
+  }
+  .crumbs a:hover {
+    color: var(--accent);
+  }
+  .head {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+    gap: 3rem;
+    align-items: start;
+  }
+  .kicker {
+    margin: 0 0 1rem;
+  }
+  .kicker span {
+    color: var(--accent);
   }
   h1 {
-    font-size: clamp(2rem, 5vw, 2.8rem);
-    letter-spacing: -0.025em;
+    font-size: clamp(2.2rem, 6vw, 3.8rem);
+    letter-spacing: -0.04em;
+    line-height: 1.02;
   }
   .summary {
     font-size: 1.15rem;
     color: var(--text-muted);
-    margin: 0.75rem 0 1.25rem;
+    margin: 1.25rem 0 0;
+    max-width: 38rem;
+  }
+  .spec {
+    background: var(--surface);
+  }
+  .status-row {
+    padding: 0.5rem 0.6rem;
+    border: 1px solid var(--line);
+    border-top: 0;
+  }
+  .notes {
+    max-width: 780px;
+    margin-top: 2.5rem;
+  }
+  @media (max-width: 860px) {
+    .head {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    .crumbs span {
+      display: none;
+    }
   }
   .links {
     display: flex;
@@ -89,15 +169,20 @@ const { Content } = await render(project);
     margin-top: 1.5rem;
   }
   .cover {
+    margin: 3rem 0 0;
+  }
+  .cover :global(img) {
     width: 100%;
-    margin-top: 2.5rem;
-    border-radius: var(--radius);
-    border: 1px solid var(--border);
+  }
+  .cover figcaption {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.6rem 0.75rem;
+    border-top: 1px solid var(--line);
   }
   .prose {
+    max-width: 780px;
     margin-top: 2.5rem;
-    border-top: 1px solid var(--border);
-    padding-top: 0.5rem;
   }
   .prose :global(h2) {
     font-size: 1.4rem;
@@ -116,8 +201,7 @@ const { Content } = await render(project);
     padding-left: 1.25rem;
   }
   .prose :global(img) {
-    border-radius: var(--radius);
-    border: 1px solid var(--border);
+    border: 1px solid var(--line);
     margin: 1.5rem 0;
   }
   .prose :global(code) {
@@ -129,8 +213,7 @@ const { Content } = await render(project);
   }
   .prose :global(pre) {
     padding: 1rem;
-    border-radius: var(--radius);
-    border: 1px solid var(--border);
+    border: 1px solid var(--line);
     overflow-x: auto;
     font-size: 0.88rem;
   }
@@ -150,7 +233,7 @@ const { Content } = await render(project);
   .prose :global(td) {
     text-align: left;
     padding: 0.55rem 0.8rem;
-    border-bottom: 1px solid var(--border);
+    border: 1px solid var(--line);
     white-space: nowrap;
   }
   .prose :global(th) {
@@ -168,7 +251,7 @@ const { Content } = await render(project);
     gap: 1rem;
     margin-top: 4rem;
     padding-top: 1.5rem;
-    border-top: 1px solid var(--border);
+    border-top: 1px solid var(--line);
   }
   .pager a {
     display: flex;

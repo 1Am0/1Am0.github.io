@@ -1,0 +1,90 @@
+---
+// Frame styled like a drawing sheet: double border with zone markers (1–4 across, A–C down).
+interface Props {
+  class?: string;
+  zones?: boolean;
+}
+
+const { class: className, zones = true } = Astro.props;
+---
+
+<div class:list={['sheet', className, { zoned: zones }]}>
+  {
+    zones && (
+      <div class="zones" aria-hidden="true">
+        <span class="z top">
+          <i>1</i><i>2</i><i>3</i><i>4</i>
+        </span>
+        <span class="z left">
+          <i>A</i><i>B</i><i>C</i>
+        </span>
+      </div>
+    )
+  }
+  <div class="inner">
+    <slot />
+  </div>
+</div>
+
+<style>
+  .sheet {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    padding: 6px;
+    box-shadow: var(--shadow);
+  }
+  .sheet.zoned {
+    padding: 22px;
+  }
+  .inner {
+    position: relative;
+    height: 100%;
+    border: 1px solid var(--line);
+  }
+  .zones {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    color: var(--text-faint);
+  }
+  .z {
+    position: absolute;
+    display: flex;
+  }
+  .z i {
+    flex: 1;
+    font-style: normal;
+    display: grid;
+    place-items: center;
+  }
+  .top {
+    top: 0;
+    left: 22px;
+    right: 22px;
+    height: 22px;
+  }
+  .top i + i {
+    border-left: 1px solid var(--line);
+  }
+  .left i + i {
+    border-top: 1px solid var(--line);
+  }
+  .left {
+    top: 22px;
+    bottom: 22px;
+    left: 0;
+    width: 22px;
+    flex-direction: column;
+  }
+  @media (max-width: 640px) {
+    .sheet.zoned {
+      padding: 6px;
+    }
+    .zones {
+      display: none;
+    }
+  }
+</style>

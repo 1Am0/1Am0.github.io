@@ -15,7 +15,10 @@ const links = [
   <div class="container nav-inner">
     <a class="logo" href="/">
       <span class="logo-mark" aria-hidden="true">AM</span>
-      <span class="logo-name">{site.name}</span>
+      <span class="logo-text">
+        <span class="logo-name">{site.name}</span>
+        <span class="logo-sub">Electrical engineering</span>
+      </span>
     </a>
     <nav aria-label="Primary">
       <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links">
@@ -25,7 +28,7 @@ const links = [
         </svg>
       </button>
       <ul id="nav-links" class="links">
-        {links.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+        {links.map((l) => <li><a href={l.href} data-section={l.href.split('#')[1]}>{l.label}</a></li>)}
         {site.resume && <li><a class="resume" href={site.resume}>Résumé</a></li>}
       </ul>
     </nav>
@@ -64,6 +67,27 @@ const links = [
   links?.addEventListener('click', (e) => {
     if ((e.target as HTMLElement).closest('a')) setOpen(false);
   });
+
+  // Highlight the nav link for the section currently in view (home page only).
+  const navLinks = new Map(
+    [...document.querySelectorAll<HTMLAnchorElement>('[data-section]')].map((a) => [a.dataset.section, a]),
+  );
+  const sections = [...navLinks.keys()]
+    .map((id) => document.getElementById(id!))
+    .filter((el): el is HTMLElement => el !== null);
+  if (sections.length) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          navLinks.forEach((a) => a.removeAttribute('aria-current'));
+          navLinks.get(entry.target.id)?.setAttribute('aria-current', 'true');
+        }
+      },
+      { rootMargin: '-45% 0px -50% 0px' },
+    );
+    sections.forEach((s) => observer.observe(s));
+  }
 </script>
 
 <style>
@@ -96,7 +120,18 @@ const links = [
     padding: 0.3rem 0.4rem;
     border: 1.5px solid var(--accent);
     color: var(--accent);
-    border-radius: 4px;
+  }
+  .logo-text {
+    display: grid;
+    line-height: 1.15;
+  }
+  .logo-sub {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    font-weight: 400;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-muted);
   }
   .links {
     display: flex;
@@ -106,13 +141,26 @@ const links = [
     padding: 0;
   }
   .links a {
+    position: relative;
     color: var(--text-muted);
     text-decoration: none;
-    font-size: 0.92rem;
-    font-weight: 500;
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
   }
-  .links a:hover {
+  .links a:hover,
+  .links a[aria-current] {
     color: var(--text);
+  }
+  .links a[aria-current]::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -6px;
+    height: 2px;
+    background: var(--accent);
   }
   .links .resume {
     color: var(--accent);
@@ -156,7 +204,7 @@ const links = [
   }
 
   @media (max-width: 760px) {
-    .logo-name {
+    .logo-sub {
       display: none;
     }
     .menu-btn {
@@ -179,8 +227,11 @@ const links = [
     }
     .links a {
       display: block;
-      padding: 0.7rem 0;
-      font-size: 1rem;
+      padding: 0.8rem 0;
+      font-size: 0.82rem;
+    }
+    .links a[aria-current]::after {
+      display: none;
     }
   }
 </style>

@@ -27,7 +27,13 @@ In the repo settings, **Pages → Source** must be set to **GitHub Actions**.
    title: Bench Power Supply
    summary: One sentence shown on the card.
    category: hardware        # or: software
-   order: 1                  # lower = earlier
+   discipline: Power electronics
+   role: Independent project # or e.g. "Team of 4, led PCB layout"
+   status: complete          # or: in-progress
+   highlights:               # short design notes (featured card + spec sheet)
+     - 4-layer board, 2–16 V input
+     - TPS63070 buck-boost, 3.3 V / 9 V selectable
+   order: 1                  # lower = earlier; the first `featured` hardware project gets the big slot
    featured: true
    draft: false              # true = only visible in `npm run dev`
    date: 2026-05-01
@@ -38,8 +44,16 @@ In the repo settings, **Pages → Source** must be set to **GitHub Actions**.
    ---
    ```
 
-3. Put images in `src/assets/projects/<slug>/` and reference them with relative paths in Markdown,
-   e.g. `![Schematic](../../assets/projects/bench-psu/schematic.png)`. Astro optimizes them at build time.
+3. Put images in `src/assets/projects/<slug>/`. For framed, captioned figures use the `Figure` component:
+
+   ```mdx
+   import Figure from '../../components/Figure.astro';
+   import schematic from '../../assets/projects/bench-psu/schematic.png';
+
+   <Figure src={schematic} alt="Power stage schematic" n={2} caption="Schematic / power stage" />
+   ```
+
+   Plain Markdown images (`![alt](../../assets/...)`) also work. Astro optimizes all of them at build time.
 4. `src/content/projects/hardware-project-1.mdx` contains the recommended write-up sections
    (requirements → system design → schematic/PCB → BOM → firmware → testing → next revision).
 

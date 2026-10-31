@@ -1,11 +1,13 @@
 :root {
-  --bg: #f7f7f5;
-  --surface: #ffffff;
-  --surface-2: #f0efeb;
+  --bg: #f4f1ea;
+  --surface: #fbfaf6;
+  --surface-2: #ece8de;
   --text: #16181d;
-  --text-muted: #5b6070;
-  --border: #dedcd5;
-  --grid: rgba(22, 24, 29, 0.05);
+  --text-muted: #565b66;
+  --text-faint: #8a8d94;
+  --border: #ddd8cc;
+  --line: #c9c3b5;
+  --grid: rgba(22, 24, 29, 0.045);
   --accent: #b4561f;
   --accent-strong: #8f4113;
   --accent-soft: rgba(180, 86, 31, 0.1);
@@ -26,7 +28,9 @@
     --surface-2: #1c2128;
     --text: #e8e9ec;
     --text-muted: #9aa1ad;
+    --text-faint: #6b7280;
     --border: #2a3039;
+    --line: #353c47;
     --grid: rgba(232, 233, 236, 0.04);
     --accent: #e8894e;
     --accent-strong: #f3a372;
@@ -44,7 +48,9 @@
   --surface-2: #1c2128;
   --text: #e8e9ec;
   --text-muted: #9aa1ad;
+  --text-faint: #6b7280;
   --border: #2a3039;
+  --line: #353c47;
   --grid: rgba(232, 233, 236, 0.04);
   --accent: #e8894e;
   --accent-strong: #f3a372;
@@ -74,7 +80,11 @@ html {
 
 body {
   margin: 0;
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 24px 24px;
   color: var(--text);
   font-family: var(--font-sans);
   font-size: 1rem;
@@ -196,6 +206,26 @@ h3 {
   background: var(--accent-strong);
   border-color: var(--accent-strong);
   color: var(--on-accent);
+}
+
+.ext::after {
+  content: '\2197';
+  display: inline-block;
+  margin-left: 0.25em;
+  font-size: 0.85em;
+  transition: transform 0.15s;
+}
+
+.ext:hover::after {
+  transform: translate(2px, -2px);
+}
+
+.mono-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
 }
 
 .sr-only {

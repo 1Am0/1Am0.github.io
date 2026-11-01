@@ -1,0 +1,73 @@
+---
+title: XOR Neural Network
+summary: A neural network written from scratch in C++ that learns XOR, the classic problem no straight-line classifier can solve, and shows how hidden neurons bend the decision boundary.
+category: software
+discipline: Machine learning · C++
+role: Independent project
+highlights:
+  - Learns XOR with one hidden layer, no ML libraries
+  - 4 hidden neurons reach 97–99% test accuracy; a linear model is stuck near 50%
+  - Backprop checked numerically on all 9 parameters (7–8 significant digits)
+  - Browser viewer for decision regions and learned weights
+order: 2
+date: 2026-10-31
+tags: [C++, Neural networks, Backpropagation, Gradient descent]
+cover: ../../assets/projects/xor-neural-network/decision-regions.png
+coverAlt: Decision regions learned with 2 hidden neurons (a diagonal band, 83% accuracy) and with 4 hidden neurons (the four quadrants, 99% accuracy)
+coverCaption: "Decision regions / 2 vs 4 hidden neurons"
+repo: https://github.com/1Am0/Neural-Net-XOR
+---
+
+## The problem
+
+Points are drawn uniformly from the square [−1, 1]². A point is labeled **1** when its two coordinates have
+the same sign (top-right and bottom-left quadrants) and **0** otherwise: XOR spread over a continuous plane.
+
+No single line can separate the two diagonal corners from the other two, so a linear model such as logistic
+regression or a perceptron is stuck at about 50%, no better than guessing. A hidden layer fixes this: each
+hidden neuron learns its own line, and the output neuron combines them into a bent boundary.
+
+## The network
+
+- **Hidden layer:** H sigmoid neurons, each computing `h = σ(w·x + b)`
+- **Output:** one sigmoid neuron, `p = σ(v·h + c)`, the probability of class 1
+- **Loss:** binary cross-entropy, with `p` clamped to avoid `log(0)`
+- **Training:** full-batch gradient descent, learning rate 1.0, 10,000 epochs, on 800 samples (200 held out)
+- **Initialization:** small random weights in ±0.5. All-zero weights would keep every hidden neuron identical
+  forever, so random starts are needed to break the symmetry.
+
+Backpropagation was derived by hand (output error `p − y`, hidden error `δo · v · h(1 − h)`) and checked
+against a numerical central-difference gradient: all 9 parameters of the 2-neuron network matched to 7–8
+significant digits.
+
+## Results
+
+| Model | Test accuracy | What it learns |
+| --- | --- | --- |
+| Logistic regression / perceptron | ~50% | One straight line, no better than guessing |
+| 2 hidden neurons | ~84% | A diagonal band between two parallel lines |
+| 4 hidden neurons | ~97–99% | Four lines that combine into the quadrant pattern |
+| 8 hidden neurons | ~98% | No more accurate than 4, but trains reliably on every seed |
+
+Two neurons top out around 84% because, even if they learned the axes exactly, the output neuron would then
+have to compute XOR of their answers: the same unsolvable problem, one layer up. The best it can do is a band.
+
+With 4 neurons the network didn't find the "obvious" axis lines. It built a diamond of diagonal lines whose
+combined vote lands on the axes. Neurons beyond about 4–6 mostly duplicate others or go flat; they don't add
+accuracy, but they make it less likely that training gets stuck on an unlucky random start.
+
+## Visualizing it
+
+The program writes its predictions over a 60×60 grid, the test points and each hidden neuron's weights to a
+CSV file, and a standalone viewer page plots them: the network's output across the square, misclassified
+points, each hidden neuron's line, and a table of the learned weights.
+
+## What I learned
+
+- Why a hidden layer plus a nonlinearity is what lets a network go beyond straight-line boundaries
+- Deriving and implementing backpropagation by hand, and verifying it numerically
+- Why weights must start random, not zero
+- How the number of hidden neurons trades accuracy against how reliably training works
+
+This led directly into the [Handwritten Digit Classifier](/projects/handwritten-digit-classifier/). The network
+code is my own; the CSV export and the viewer page were written with help from an AI assistant.

@@ -114,6 +114,24 @@ const toc = headings.filter((h) => h.depth === 2);
 </Base>
 
 <script>
+  // Wide tables scroll sideways; make those focusable so keyboard users can scroll them too.
+  const markScrollable = () => {
+    for (const [i, table] of [...document.querySelectorAll<HTMLTableElement>('.prose table')].entries()) {
+      const scrolls = table.scrollWidth > table.clientWidth + 1;
+      table.toggleAttribute('tabindex', scrolls);
+      if (scrolls) {
+        table.tabIndex = 0;
+        table.setAttribute('role', 'region');
+        table.setAttribute('aria-label', `Table ${i + 1} (scrolls sideways)`);
+      } else {
+        table.removeAttribute('role');
+        table.removeAttribute('aria-label');
+      }
+    }
+  };
+  markScrollable();
+  addEventListener('resize', markScrollable);
+
   // Highlight the contents entry for the section being read.
   const tocLinks = new Map(
     [...document.querySelectorAll<HTMLAnchorElement>('[data-toc]')].map((a) => [a.dataset.toc, a]),
@@ -322,7 +340,13 @@ const toc = headings.filter((h) => h.depth === 2);
     text-align: left;
     padding: 0.55rem 0.8rem;
     border: 1px solid var(--line);
+  }
+  .prose :global(th) {
     white-space: nowrap;
+  }
+  .prose :global(table:focus-visible) {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
   }
   .prose :global(th) {
     font-family: var(--font-mono);

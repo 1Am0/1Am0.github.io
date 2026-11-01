@@ -1,0 +1,107 @@
+---
+title: Handwritten Digit Classifier
+summary: A neural network written from scratch in C++, with no ML or linear-algebra libraries, that reads handwritten digits from MNIST with 96.75% accuracy.
+category: software
+discipline: Machine learning · C++
+role: Independent project
+highlights:
+  - 96.75% accuracy on 10,000 held-out test digits
+  - 784 → 64 → 10 network, 50,890 parameters, standard library only
+  - Backprop verified by a numerical gradient check (8–10 significant digits)
+  - Interactive network explorer and draw-a-digit web pages
+order: 1
+date: 2026-10-31
+tags: [C++, Neural networks, Backpropagation, MNIST]
+cover: ../../assets/projects/handwritten-digit-classifier/explorer.png
+coverAlt: The network explorer following a handwritten 0 through the 64 hidden neurons to a 99.2% confident prediction
+coverCaption: "Network explorer / one digit through the network"
+repo: https://github.com/1Am0/mnist-from-scratch-cpp
+---
+
+import Figure from '../../components/Figure.astro';
+import hiddenWeights from '../../assets/projects/handwritten-digit-classifier/hidden-weights.png';
+import training from '../../assets/projects/handwritten-digit-classifier/training-and-mistakes.png';
+import drawDigit from '../../assets/projects/handwritten-digit-classifier/draw-a-digit.png';
+
+## Overview
+
+A handwritten-digit classifier built from first principles: one `main.cpp`, the C++ standard library, and the
+math worked out by hand. It reads the raw MNIST files, trains a 784 → 64 → 10 neural network with mini-batch
+gradient descent and backpropagation, and classifies the 10,000 test digits it never saw during training.
+
+This was the last step in a series of from-scratch projects: linear regression, a perceptron, logistic
+regression, a [neural network that learns XOR](/projects/xor-neural-network/), and then this.
+
+## How it works
+
+1. **Loading the data:** MNIST is stored in the IDX binary format, a big-endian header followed by raw bytes.
+   The loader assembles each 4-byte header field with shifts and ORs, validates the magic numbers, then reads
+   the pixels in one bulk read and scales them to 0–1.
+2. **Forward pass:** 64 sigmoid hidden neurons each take a weighted sum of all 784 pixels. Ten output neurons
+   combine the hidden activations, and softmax turns their scores into probabilities (subtracting the largest
+   score first so `exp` can't overflow).
+3. **Loss:** cross-entropy, `-log(p[label])`. An untrained network scores about ln 10 ≈ 2.30.
+4. **Backpropagation:** with softmax and cross-entropy, the output error is simply `p − one_hot(label)`; hidden
+   errors are the weighted output errors times `h(1 − h)`.
+5. **Training:** shuffle every epoch, walk through the data in mini-batches of 32, average the gradients, step.
+6. **Checking the math:** the analytic gradients match a numerical finite-difference check to 8–10 significant
+   digits for every parameter type.
+
+| Setting | Value |
+| --- | --- |
+| Architecture | 784 → 64 sigmoid → 10 softmax |
+| Parameters | 50,890 |
+| Training | 60,000 images, batches of 32, 15 epochs, learning rate 0.1 |
+| Test accuracy | **96.75%** |
+| Training time | about 6 s per epoch on one CPU core |
+
+## What the network learned
+
+Each tile is one hidden neuron's 784 weights drawn as a 28×28 image: blue where ink turns the neuron on, red
+where it turns it off. The neurons learned blurry stroke and curve detectors, not whole digits, and the output
+layer combines them into a vote.
+
+<Figure src={hiddenWeights} alt="The 64 hidden neurons' weights, each drawn as a 28 by 28 image of blue and red strokes" n={2} caption="Hidden layer / 64 learned weight maps" />
+
+The most common mistakes are 4 → 9, 7 → 2, 5 → 3 and 9 → 4: pairs that differ by a single stroke.
+
+<Figure src={training} alt="Training loss falling from 2.3 to 0.09 and test accuracy rising to 96.6% over 15 epochs, above a confusion matrix of the test set" n={3} caption="Training curves and confusion matrix" />
+
+## Experiments
+
+**How many hidden neurons?** Same setup, 15 epochs, learning rate 0.5:
+
+| Hidden neurons | 0 | 2 | 4 | 8 | 16 | 32 | 64 | 128 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Test accuracy (%) | 91.7 | 42.8 | 82.9 | 91.4 | 94.6 | 97.0 | 97.6 | 98.1 |
+
+Two hidden neurons is worse than none, because squeezing every image through two numbers throws information
+away. Past about 64, doubling the layer buys only about half a percent.
+
+**Does a second hidden layer help?** Barely: 64 → 32 scored 97.68% against 97.61% for 64 alone, and a single
+layer of 128 (98.13%) beat every two-layer version, since deeper sigmoid networks train slowly.
+
+**Does position matter?** A lot. Every weight is tied to one fixed pixel, so shifting the test digits sideways
+breaks the network quickly:
+
+| Shift right | 0 px | 1 px | 2 px | 3 px | 4 px | 6 px |
+| --- | --- | --- | --- | --- | --- | --- |
+| Test accuracy (%) | 96.6 | 93.7 | 75.5 | 52.3 | 30.3 | 9.2 |
+
+That's why convolutional networks exist, and why the draw-a-digit page centers drawings the way MNIST does.
+
+## Interactive tools
+
+Two companion web pages: a **network explorer** that follows a test digit through every neuron and shows the
+training curves and confusion matrix, and a **draw-a-digit** page that converts your drawing into a
+28×28 MNIST-style image (crop, scale to 20×20, center by mass) and runs it through the trained network.
+
+<Figure src={drawDigit} alt="The draw-a-digit page with a drawing canvas, the 28 by 28 image the network sees, and a personal handwriting test set scoring 80%" n={4} caption="Draw-a-digit page" />
+
+## Next steps
+
+ReLU instead of sigmoid, a validation split, ±2 px shifts as data augmentation, a convolutional layer, and
+exporting the weights to run inference on an ESP32 microcontroller.
+
+The network code was written by hand, step by step, with an AI assistant acting as a tutor for hints and code
+review.

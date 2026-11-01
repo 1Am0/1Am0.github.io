@@ -35,6 +35,8 @@ const projects = defineCollection({
       // Photo of the finished build. Also used as the card image and social preview.
       cover: image().optional(),
       coverAlt: z.string().optional(),
+      // Short caption under the cover on the project page (defaults to coverAlt).
+      coverCaption: z.string().optional(),
       // Schematic and PCB layout images, shown as tabs next to the 3D model at the top of the project page.
       // (The layout field is called `pcb` because MDX reserves `layout`.)
       schematic: drawing(image),

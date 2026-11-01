@@ -114,10 +114,7 @@ To open on a different tab, add `firstView: schematic` (or `pcb`, `photo`, `demo
 ### Pictures on the home page
 
 Every project card and software row has a picture. It uses the first of these that the project has:
-`cover` photo → `art` (a custom drawn icon) → `model.poster` (a render) → `pcb` → `schematic`.
-
-`art:` picks one of the drawn icons in `src/components/ProjectArt.astro` (currently `chess-canopy` and
-`minesweeper`); it also appears in the project's page header and archive row. New icons are drawn there. If none are set, the card shows a generated
+`cover` photo (or screenshot, for software) → `model.poster` (a render) → `pcb` → `schematic`. If none are set, the card shows a generated
 drawing (an IC footprint for hardware, a code window for software) that's different for each project. For the
 strongest home page, give each hardware project a `model.poster` render or a `cover` photo, and give software
 projects a `cover` screenshot.

@@ -32,8 +32,6 @@ const projects = defineCollection({
       draft: z.boolean().default(false),
       date: z.coerce.date().optional(),
       tags: z.array(z.string()).default([]),
-      // Custom drawn icon (see src/components/ProjectArt.astro), shown on the card, archive row and page header.
-      art: z.enum(['chess-canopy', 'minesweeper']).optional(),
       // Photo of the finished build. Also used as the card image and social preview.
       cover: image().optional(),
       coverAlt: z.string().optional(),

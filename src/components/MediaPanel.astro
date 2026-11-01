@@ -30,7 +30,7 @@ if (schematic)
 if (pcb)
   views.push({ kind: 'image', id: 'layout', label: 'PCB layout', src: pcb.src, alt: pcb.alt, caption: pcb.caption ?? 'PCB layout' });
 if (cover)
-  views.push({ kind: 'image', id: 'photo', label: 'Photo', src: cover, alt: coverAlt ?? '', caption: coverAlt ?? title });
+  views.push({ kind: 'image', id: 'photo', label: project.data.category === 'software' ? 'Screenshot' : 'Photo', src: cover, alt: coverAlt ?? '', caption: coverAlt ?? title });
 if (video) views.push({ kind: 'video', id: 'demo', label: 'Demo' });
 // Move the project's chosen first view to the front.
 const firstIndex = views.findIndex((v) => v.id === (firstView === 'pcb' ? 'layout' : firstView));

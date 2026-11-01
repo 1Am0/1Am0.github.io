@@ -75,7 +75,10 @@ Fill in what you can; leave the rest blank. Lines starting with ">" show what's 
 - **Minesweeper repo** (github.com/phAPCSA25period1/final-project-1Am0): is it **public**? Classroom repos are
   usually private, which would make the "Source" link a 404 for visitors. If it's private: make it public, copy
   it to your own account, or Claude can remove the link.
-- **Screenshots** of Chess Canopy and Minesweeper running (put them in `inbox/chess-canopy/` and
-  `inbox/minesweeper/`): they replace the generated pictures on the home page.
+- **Minesweeper source doesn't compile as committed:** `src/Window.java` has five stray lines containing just
+  `\n` (lines 335, 370, 389, 449, 480) and is missing imports such as `java.awt.BorderLayout`. Fix and push it
+  (or ask Claude to open a pull request with the fix) so the README's build steps work for visitors.
+- **Screenshots:** done; Claude ran both apps and captured real screenshots. Send your own if you'd prefer
+  different ones.
 - **Chess Canopy:** is there a live demo URL? Anything more to say (how the pattern recognition works, what
   data source, what you learned)?

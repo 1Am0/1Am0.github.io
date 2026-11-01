@@ -2,7 +2,6 @@
 import Base from '../../layouts/Base.astro';
 import StatusBadge from '../../components/StatusBadge.astro';
 import Icon from '../../components/Icon.astro';
-import ProjectArt from '../../components/ProjectArt.astro';
 import { getProjects, getProjectCodes } from '../../lib/projects';
 import { site } from '../../data/site';
 
@@ -40,7 +39,6 @@ const codes = await getProjectCodes();
                 <td class="code">{codes.get(p.id)}</td>
                 <td class="title">
                   <a href={`/projects/${p.id}/`}>
-                    {p.data.art && <ProjectArt name={p.data.art} class="row-art" />}
                     {p.data.title}
                   </a>
                 </td>
@@ -160,11 +158,6 @@ const codes = await getProjectCodes();
     color: var(--text);
     font-weight: 600;
     text-decoration: none;
-  }
-  .title :global(.row-art) {
-    width: 1.75rem;
-    height: 1.75rem;
-    flex-shrink: 0;
   }
   .title a:hover {
     color: var(--accent);

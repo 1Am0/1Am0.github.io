@@ -28,6 +28,8 @@ const projects = defineCollection({
       // Lower numbers sort first within a category.
       order: z.number().default(100),
       featured: z.boolean().default(false),
+      // false = listed in the archive (/projects/) and keeps its page, but not shown on the home page.
+      showOnHome: z.boolean().default(true),
       // Drafts render in `astro dev` but are left out of production builds.
       draft: z.boolean().default(false),
       date: z.coerce.date().optional(),

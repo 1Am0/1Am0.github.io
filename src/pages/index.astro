@@ -13,7 +13,7 @@ import { Image } from 'astro:assets';
 import { site, skillGroups, experience, awards, education } from '../data/site';
 
 const hardware = await getProjects('hardware');
-const software = await getProjects('software');
+const software = (await getProjects('software')).filter((p) => p.data.showOnHome);
 const codes = await getProjectCodes();
 const featured = hardware.find((p) => p.data.featured) ?? hardware[0];
 const otherHardware = hardware.filter((p) => p !== featured);

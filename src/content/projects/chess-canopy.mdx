@@ -1,25 +1,73 @@
 ---
 title: Chess Canopy
-summary: Open-source full-stack chess analyzer with a pattern-recognition system covering 3,800+ openings.
+summary: An opening explorer that imports every game I've played on Chess.com and Lichess and shows, move by move, how each line has actually worked out for me.
 category: software
-discipline: Software · Data analysis
+discipline: Software · Data tools
 role: Independent project
 highlights:
-  - Pattern recognition across 3,800+ openings
-  - Built with Python and JavaScript
-  - Chess API integration
+  - Imports 7,600+ of my games from the Chess.com and Lichess APIs
+  - Move tree (trie) with win/draw/loss counts at every position
+  - Names openings with ECO codes from Lichess's 3,800+ opening list
+  - Web UI, terminal explorer and a one-click Windows app; 19 automated tests
 cover: ../../assets/projects/chess-canopy/screenshot.png
-coverAlt: Chess Canopy's opening explorer showing the King's Pawn Game and next-move win rates from 703 of my games
+coverAlt: Chess Canopy's opening explorer after 1. e4 e5, naming the King's Pawn Game (C20) and showing win, draw and loss bars for each next move across 703 of my games
 coverCaption: "Opening explorer / King's Pawn Game"
-order: 3
-tags: [Python, JavaScript, APIs, Data analysis]
+order: 2
+date: 2026-02-15
+tags: [Python, JavaScript, Data structures, REST APIs]
 repo: https://github.com/1Am0/Chess-Canopy
 ---
 
 ## Overview
 
-Chess Canopy is an open-source, full-stack chess analyzer built with Python and JavaScript. It pulls game
-data through API integrations and runs a pattern-recognition pass over large datasets, covering 3,800+
-openings, to show which lines give a player a competitive edge.
+Opening databases tell you what grandmasters play. I wanted to know what works **for me**: in the positions I
+actually reach, which moves have I won with, and which ones keep losing? Chess Canopy downloads my entire game
+history from Chess.com and Lichess, builds a tree of every move sequence I've played, and lets me walk through
+it on a board with my own results for each candidate move.
 
-{/* TODO: add architecture notes, screenshots, and what you learned. */}
+My data set is 7,679 games: 6,215 from Chess.com and 1,464 from Lichess.
+
+## How it works
+
+1. **Import:** command-line tools pull every game from the Chess.com monthly archives and the Lichess games
+   API, plus any local PGN files. Downloads and PGN parsing run in parallel threads, duplicates are removed by
+   game ID, and each game is stored as JSON with its result, ratings, date, time control and moves.
+2. **Normalize:** time controls are classified the way Chess.com does (bullet, blitz, rapid, classical,
+   daily), and dates and results are cleaned up so games from both sites can be filtered and merged together.
+3. **Build the move tree:** filtered games are inserted into a trie, one node per move. Every node keeps
+   running totals of wins, draws and losses, so the statistics for any position are already there when you
+   reach it, with no rescanning of thousands of games. Separate trees are built for games as White and as
+   Black.
+4. **Serve:** a small Python web server answers the UI's requests (players, next moves, imports) and caches the
+   built trees per player and filter combination, so switching back to a view loads in under 50 ms.
+5. **Explore:** the browser UI shows the board, names the current opening and its ECO code using Lichess's
+   open list of 3,800+ named openings, and draws a win/draw/loss bar for each next move.
+
+## Features
+
+- **Filters:** color, result, opponent, time control, rating range and date range, with games from several
+  accounts merged into one view
+- **Interactive board:** click or drag moves, arrow-key navigation, flip the board, jump to start or end
+- **Terminal explorer:** browse the same tree from the command line
+- **Top positions:** list the positions I reach most often, with optional engine evaluations from Lichess's
+  cloud-eval API, cached on disk so repeat lookups don't hit the network
+- **Windows app:** packaged with PyInstaller into a double-click executable that opens the UI in the browser,
+  for people who don't have Python
+
+## Engineering notes
+
+- **Why a trie:** an opening explorer asks one question over and over: "from this exact sequence of moves, what
+  came next and how did it go?" A trie answers it by walking one node per move, and storing the result counts
+  on each node turns every lookup into a read instead of a scan.
+- **Performance:** importing roughly 7,000 games takes under 10 seconds. Parsing is parallelized, and the
+  optional `orjson` library makes JSON loading 2–3× faster. A benchmark script separates JSON parsing time from
+  tree-building time.
+- **Testing:** 19 pytest tests cover the importers (with the Lichess API mocked), PGN parsing and error
+  handling, filtering and tree building, duplicate detection and the command-line tools.
+
+## What I learned
+
+- Designing a data structure around the question the user keeps asking
+- Working with two different public APIs and reconciling their data into one schema
+- Where the time actually goes in a data pipeline, and measuring it before optimizing
+- Shipping software to non-programmers: packaging, sensible defaults and a UI instead of flags

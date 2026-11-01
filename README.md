@@ -48,6 +48,7 @@ In the repo settings, **Pages → Source** must be set to **GitHub Actions**.
      - TPS63070 buck-boost, 3.3 V / 9 V selectable
    order: 1                  # lower = earlier; the first `featured` hardware project gets the big slot
    featured: true
+   showOnHome: true          # false = archive only, not on the home page
    draft: false              # true = only visible in `npm run dev`
    date: 2026-05-01
    tags: [STM32, KiCad, Buck converter]

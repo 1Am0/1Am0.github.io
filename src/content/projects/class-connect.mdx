@@ -1,0 +1,144 @@
+---
+title: Class Connect
+summary: An RFID attendance scanner for classrooms. A student taps a fob on the reader, an ESP32 sends the scan to the Class Connect website over Bluetooth LE, and an LED and a speaker confirm it.
+category: hardware
+discipline: Embedded systems · Product design
+role: Team of four · electronics, 3D modelling, part of the website design
+status: complete
+highlights:
+  - Tested with 200+ students and multiple cards
+  - ESP32 DevKit V1 and an RC522-style RFID reader; scans reach the website over Bluetooth LE
+  - Two-layer board designed in Fusion Electronics, 72.37 × 77.14 mm, in a two-part 3D-printed case
+  - About $20 per unit in parts
+order: 1
+featured: true
+tags: [ESP32, RFID, Bluetooth LE, Fusion 360, 3D printing]
+cover: ../../assets/projects/class-connect/cover.png
+coverAlt: Render of the closed Class Connect enclosure with a large speaker opening and green and red LEDs showing through the lid
+coverCaption: "Assembled enclosure / 3/4 view"
+firstView: model
+model:
+  src: /models/class-connect.glb
+  alt: 3D model of the Class Connect enclosure and board. The Explode animation lifts the lid off to show the board inside.
+  caption: Class Connect / interactive 3D, press play for the exploded view
+  poster: ../../assets/projects/class-connect/cover.png
+  animation: Explode
+schematic:
+  src: ../../assets/projects/class-connect/schematic.png
+  alt: Schematic of the ESP32 DevKit V1 connected to the RFID reader module, a green LED, a red LED and a speaker
+  caption: Schematic / ESP32, reader, LEDs and speaker
+pcb:
+  src: ../../assets/projects/class-connect/pcb-top.png
+  alt: Top view of the Class Connect board with the RFID reader module, two LEDs and the ESP32 footprint
+  caption: PCB / top view
+repo: https://github.com/1Am0/Class-Connect
+demo: https://classroom-attendance-pi.vercel.app
+downloads:
+  - label: Schematic
+    href: /files/class-connect/schematic.pdf
+  - label: Bill of materials
+    href: /files/class-connect/bom.csv
+    note: 5 parts
+  - label: Gerbers
+    href: /files/class-connect/gerbers.zip
+    note: Gerbers, drill file and pick-and-place
+  - label: Enclosure (STEP)
+    href: /files/class-connect/enclosure.step
+  - label: Enclosure base (STL)
+    href: /files/class-connect/enclosure-base.stl
+  - label: Enclosure lid (STL)
+    href: /files/class-connect/enclosure-lid.stl
+---
+
+import Figure from '../../components/Figure.astro';
+import ModelViewer from '../../components/ModelViewer.astro';
+import schematic from '../../assets/projects/class-connect/schematic.png';
+import pcbTop from '../../assets/projects/class-connect/pcb-top.png';
+import pcbBottom from '../../assets/projects/class-connect/pcb-bottom.png';
+import exploded from '../../assets/projects/class-connect/exploded.png';
+
+## Overview
+
+Class Connect tracks daily attendance without using class time. A teacher wanted attendance recorded every day
+without taking minutes out of the lesson, so students tap a fob on a small scanner, and the scan is sent to the
+Class Connect website.
+
+I was one of four people on the team. My part was the electronics, the 3D modelling and some of the website
+design. It was built and tested with more than 200 students and several cards, and each unit costs about $20 in
+parts against a budget target of $50 to $100.
+
+## How it works
+
+1. A student taps an RFID fob on the scanner. The fobs are ETEKJOY 13.56 MHz MIFARE Classic 1K compatible
+   fobs, bought as a 100-pack for $18.
+2. An RC522-style reader module reads the fob and passes it to an **ESP32 DevKit V1** over SPI.
+3. The ESP32 sends the scan to the Class Connect website over **Bluetooth LE**.
+4. The ESP32 drives three outputs: a **green LED** (GPIO2) when a card has checked in, a **red LED** (GPIO25)
+   for an error, and a **speaker** (GPIO26) for audio feedback.
+
+The scanner is powered by USB only, with no battery. The cable enters through an opening in the base wall, and
+the reader runs from the DevKit's 3V3 pin.
+
+## The hardware
+
+The board is two copper layers, 72.37 × 77.14 mm and 1.5 mm thick, designed in Fusion Electronics with a
+separate schematic. The ESP32 DevKit is mounted on the bottom side, the LEDs and speaker are wired to the
+ESP32's GPIO pins, and four Ø2.5 mm holes mount the reader module.
+
+| Ref | Part | Package | Qty | Role |
+| --- | ---- | ------- | --- | ---- |
+| U3 | ESP32 DevKit V1 (ESP32-WROOM-32) | 30-pin dev board | 1 | Microcontroller with Bluetooth LE and USB power |
+| U2 | CEG006900 | 8-pin module (SPI) | 1 | RC522-style 13.56 MHz RFID reader |
+| D1 | Green LED | 5 mm radial | 1 | Card checked in |
+| D2 | Red LED | 5 mm radial | 1 | Error |
+| SP1 | Speaker | Adafruit AL60P footprint | 1 | Audio feedback |
+
+<Figure src={schematic} alt="Schematic of the ESP32 DevKit V1 connected to the RFID reader module, a green LED, a red LED and a speaker" n={2} caption="Schematic / ESP32, reader, LEDs and speaker" />
+
+<Figure src={pcbTop} alt="Top view of the Class Connect board with the RFID reader module, two LEDs and the ESP32 footprint" n={3} caption="PCB / top side" />
+
+<Figure src={pcbBottom} alt="Bottom view of the Class Connect board with the ESP32 DevKit mounted on the underside" n={4} caption="PCB / bottom side, ESP32 DevKit" />
+
+The board renders come from the 3D model used in the enclosure assembly, which was saved before the final board
+revision, so small details of the module placement differ from the latest board file.
+
+## The enclosure
+
+The case is two printed parts, a base and a lid, with a footprint of 89.2 × 96.5 mm and a stacked height of about
+17 mm. The base has a 2 mm floor.
+
+- The lid has two LED holes, Ø6.45 mm and Ø6.29 mm, that line up with the green and red LEDs (D1 and D2).
+- A Ø13.48 mm opening in the lid sits in line with the speaker (SP1).
+- One 13.7 mm-wide opening in the base wall lets the USB cable reach the ESP32.
+
+It was printed in PLA on a Bambu Lab A1 Mini. The STEP and STL files are in the downloads above.
+
+<Figure src={exploded} alt="Exploded view of the enclosure with the lid lifted above the board and the base below" n={5} caption="Exploded view / lid, board and base" />
+
+<ModelViewer src="/models/enclosure.glb" alt="3D model of the Class Connect enclosure, base and lid" n={6} caption="Enclosure only / base and lid" />
+
+## Engineering story
+
+**Design decisions**
+
+- Switched from an Arduino to an ESP32.
+- Used separate blank RFID fobs instead of scanning student ID barcodes, because of FERPA and privacy concerns.
+- Chose the $18 pack of 100 ETEKJOY fobs over a $40 pack of blank cards.
+
+**What went wrong**
+
+Some parts were soldered on wrong. Because the team had spare parts, they were replaced and fixed. A concern
+from the teacher was that students lose their fobs.
+
+**Testing**
+
+The scanner handled more than 200 students and multiple cards.
+
+**What I'd change**
+
+Our planning, and how hard we worked each day.
+
+## Links
+
+- Source code: [github.com/1Am0/Class-Connect](https://github.com/1Am0/Class-Connect)
+- Live site: [classroom-attendance-pi.vercel.app](https://classroom-attendance-pi.vercel.app)

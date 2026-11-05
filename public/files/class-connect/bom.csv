@@ -1,0 +1,6 @@
+Reference,Qty,Value,Package / Footprint,Description
+U3,1,DEVKIT_V1_ESP32-WROOM-32,DEVKIT_V1_ESP32-WROOM-32 (30-pin),ESP32 DevKit V1 microcontroller board (BLE + USB power)
+U2,1,CEG006900,MODULE_CEG006900 (8-pin),RC522-style 13.56 MHz RFID reader module (SPI)
+D1,1,LED_GREEN,5 mm radial LED,Green LED: card checked in
+D2,1,LED_RED,5 mm radial LED,Red LED: error
+SP1,1,SPEAKER/AL60P,AL60P,Speaker: audio feedback

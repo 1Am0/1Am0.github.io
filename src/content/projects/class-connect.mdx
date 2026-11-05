@@ -16,6 +16,7 @@ tags: [ESP32, RFID, Bluetooth LE, Fusion 360, 3D printing]
 cover: ../../assets/projects/class-connect/cover.png
 coverAlt: Render of the closed Class Connect enclosure with a large speaker opening and green and red LEDs showing through the lid
 coverCaption: "Assembled enclosure / 3/4 view"
+coverLabel: Render
 firstView: model
 model:
   src: /models/class-connect.glb
@@ -51,7 +52,6 @@ downloads:
 ---
 
 import Figure from '../../components/Figure.astro';
-import ModelViewer from '../../components/ModelViewer.astro';
 import schematic from '../../assets/projects/class-connect/schematic.png';
 import pcbTop from '../../assets/projects/class-connect/pcb-top.png';
 import pcbBottom from '../../assets/projects/class-connect/pcb-bottom.png';
@@ -85,13 +85,13 @@ The board is two copper layers, 72.37 × 77.14 mm and 1.5 mm thick, designed in 
 separate schematic. The ESP32 DevKit is mounted on the bottom side, the LEDs and speaker are wired to the
 ESP32's GPIO pins, and four Ø2.5 mm holes mount the reader module.
 
-| Ref | Part | Package | Qty | Role |
-| --- | ---- | ------- | --- | ---- |
-| U3 | ESP32 DevKit V1 (ESP32-WROOM-32) | 30-pin dev board | 1 | Microcontroller with Bluetooth LE and USB power |
-| U2 | CEG006900 | 8-pin module (SPI) | 1 | RC522-style 13.56 MHz RFID reader |
-| D1 | Green LED | 5 mm radial | 1 | Card checked in |
-| D2 | Red LED | 5 mm radial | 1 | Error |
-| SP1 | Speaker | Adafruit AL60P footprint | 1 | Audio feedback |
+| Ref | Part | Qty | Role |
+| --- | ---- | --- | ---- |
+| U3 | ESP32 DevKit V1 (ESP32-WROOM-32), 30-pin dev board | 1 | Microcontroller with Bluetooth LE and USB power |
+| U2 | CEG006900, 8-pin SPI module | 1 | RC522-style 13.56 MHz RFID reader |
+| D1 | Green LED, 5 mm radial | 1 | Card checked in |
+| D2 | Red LED, 5 mm radial | 1 | Error |
+| SP1 | Speaker, Adafruit AL60P footprint | 1 | Audio feedback |
 
 <Figure src={schematic} alt="Schematic of the ESP32 DevKit V1 connected to the RFID reader module, a green LED, a red LED and a speaker" n={2} caption="Schematic / ESP32, reader, LEDs and speaker" />
 
@@ -114,8 +114,6 @@ The case is two printed parts, a base and a lid, with a footprint of 89.2 × 96.
 It was printed in PLA on a Bambu Lab A1 Mini. The STEP and STL files are in the downloads above.
 
 <Figure src={exploded} alt="Exploded view of the enclosure with the lid lifted above the board and the base below" n={5} caption="Exploded view / lid, board and base" />
-
-<ModelViewer src="/models/enclosure.glb" alt="3D model of the Class Connect enclosure, base and lid" n={6} caption="Enclosure only / base and lid" />
 
 ## Engineering story
 

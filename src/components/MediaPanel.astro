@@ -16,7 +16,7 @@ interface Props {
 }
 
 const { project, code } = Astro.props;
-const { title, cover, coverAlt, coverCaption, model, video, schematic, pcb, firstView } = project.data;
+const { title, cover, coverAlt, coverCaption, coverLabel, model, video, schematic, pcb, firstView } = project.data;
 
 type View =
   | { kind: 'model'; id: string; label: string }
@@ -30,7 +30,7 @@ if (schematic)
 if (pcb)
   views.push({ kind: 'image', id: 'layout', label: 'PCB layout', src: pcb.src, alt: pcb.alt, caption: pcb.caption ?? 'PCB layout' });
 if (cover)
-  views.push({ kind: 'image', id: 'photo', label: project.data.category === 'software' ? 'Screenshot' : 'Photo', src: cover, alt: coverAlt ?? '', caption: coverCaption ?? coverAlt ?? title });
+  views.push({ kind: 'image', id: 'photo', label: coverLabel ?? (project.data.category === 'software' ? 'Screenshot' : 'Photo'), src: cover, alt: coverAlt ?? '', caption: coverCaption ?? coverAlt ?? title });
 if (video) views.push({ kind: 'video', id: 'demo', label: 'Demo' });
 // Move the project's chosen first view to the front.
 const firstIndex = views.findIndex((v) => v.id === (firstView === 'pcb' ? 'layout' : firstView));

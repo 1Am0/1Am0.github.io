@@ -1,0 +1,152 @@
+---
+title: Buck Converter
+summary: A 12 V to 5 V, 1 A step-down converter built around the LM2596T-ADJ. The perfboard version holds 4.97 V at full load; a PCB version is in progress.
+category: hardware
+discipline: Power electronics
+status: in-progress
+highlights:
+  - 12 V to 5 V at 1 A; measured 4.98 V with no load and 4.97 V at a full 1 A load
+  - Built and tested on perfboard; the PCB version is in progress
+  - Feedback divider built from four common 1% resistors; FB pin measured at 1.23 V
+  - Designed in LTspice, with the schematic drawn in Fusion Electronics (ERC clean)
+order: 2
+tags: [LM2596, LTspice, Fusion Electronics, Power electronics]
+schematic:
+  src: ../../assets/projects/buck-converter/schematic.png
+  alt: Schematic of the LM2596T-ADJ buck converter with input and output terminals, a 68 µH inductor, a 1N5822 Schottky diode, input and output capacitors, and a four-resistor feedback divider
+  caption: Schematic / LM2596T-ADJ, 12 V to 5 V
+repo: https://github.com/1Am0/buck-converter
+downloads:
+  - label: Schematic
+    href: /files/buck-converter/schematic.pdf
+    note: One page
+  - label: Schematic source
+    href: /files/buck-converter/schematic.sch
+    note: EAGLE format, exported from Fusion
+  - label: Bill of materials
+    href: /files/buck-converter/bom.csv
+    note: 12 parts
+---
+
+import Figure from '../../components/Figure.astro';
+import schematic from '../../assets/projects/buck-converter/schematic.png';
+
+## Overview
+
+A buck converter steps a voltage down efficiently by switching the input on and off about 150,000 times a second
+and smoothing the result, instead of burning the extra voltage as heat the way a linear regulator does. This one
+turns a 12 V adapter into 5 V at up to 1 A.
+
+It started in LTspice, moved to a schematic in Fusion Electronics, and was then built by hand from through-hole
+parts on a 7 × 9 cm perfboard. A PCB version is the next step.
+
+| Spec | Target | Result |
+| --- | --- | --- |
+| Input | 12 V adapter | 14.5 V measured with no load |
+| Output | 5.00 V | 4.98 V no load, 4.97 V at 1 A |
+| Load current | 1 A | 1 A (5 Ω, 25 W load resistor) |
+| Regulator | LM2596T-ADJ | TO-220-5, 150 kHz switching |
+| Build | Perfboard | 7 × 9 cm, wires on the solder side |
+
+## How it works
+
+While the switch inside U1 is on, current flows from the input through the inductor L1 into the output and charges
+C_OUT. When the switch turns off, L1 keeps pushing current, and the Schottky diode D1 gives that current a path
+around, so the output never sees a gap. The ratio of on-time to total time sets the output voltage, roughly
+Vout = D × Vin, so 5 V from 12 V means the switch is on about 42% of the time. The regulator adjusts that duty
+cycle on its own to hold the output steady.
+
+I chose the LM2596T-ADJ because it holds the switch, oscillator, reference and error amplifier in one TO-220
+package, handles 3 A, and needs only an inductor, a diode, two capacitors and a resistor divider around it. It is
+also a through-hole part, which suits perfboard.
+
+The pins mattered in practice:
+
+1. **VIN:** the input supply.
+2. **OUTPUT:** this is the switch node, not the regulated output. It feeds L1 and the cathode of D1.
+3. **GND**
+4. **FB:** feedback, which the chip regulates to 1.23 V.
+5. **ON/OFF:** tied to ground to keep the chip enabled.
+
+## Parts
+
+| Ref | Part | Why this one |
+| --- | ---- | ------------ |
+| U1 | LM2596T-ADJ | Integrated 3 A switcher, through-hole TO-220, adjustable output |
+| L1 | 68 µH toroid | The inductor sets the ripple current, so it must be rated above 1 A and not saturate. I had to search for the coiled through-hole type rather than a surface-mount one |
+| D1 | 1N5822 Schottky | Low forward drop and fast recovery; a normal diode would waste more power and be too slow at 150 kHz |
+| C_IN | 470 µF, 25 V or more | Bulk capacitor that supplies the input current pulses; the voltage rating needs margin over the 14.5 V seen at the input |
+| C_BYP | 100 nF ceramic | Handles the fast, high-frequency spikes the large electrolytic is too slow for |
+| C_OUT | 220 µF, 10 V or more | Smooths the output ripple on the 5 V rail |
+| R1–R4 | 1% axial resistors | Set the output voltage (next section) |
+| J_IN, J_OUT | 2-pin screw terminals | Connections for the adapter and the load |
+
+<Figure src={schematic} alt="Schematic of the LM2596T-ADJ buck converter with input and output terminals, a 68 µH inductor, a 1N5822 Schottky diode, input and output capacitors, and a four-resistor feedback divider" n={2} caption="Schematic / LM2596T-ADJ, 12 V to 5 V" />
+
+The two input capacitors are in parallel on purpose: the big electrolytic stores charge but responds slowly, and the
+small ceramic responds instantly to the switching edges.
+
+## The feedback divider
+
+The LM2596 adjusts its output until the voltage at the FB pin equals its 1.23 V reference. A resistor chain from
+the output sets what fraction of the output the chip sees at FB:
+
+- `Vout = Vref × (1 + Rtop / R1)`, with `Vref = 1.23 V`
+- `Rtop = R1 × (Vout / Vref − 1) = 1000 × (5.00 / 1.23 − 1) ≈ 3065 Ω`
+
+The first plan was 3 kΩ plus 68 Ω in series (3068 Ω), which gives 5.00 V. Those values weren't in my parts bin, so I
+kept R1 at 1 kΩ and built the top half from series combinations of resistors I owned, comparing each prediction with
+a measurement:
+
+| Top chain | Total | Predicted | Measured |
+| --- | --- | --- | --- |
+| 3 kΩ + 68 Ω (original plan, not on hand) | 3068 Ω | 5.00 V | not built |
+| 2.2 kΩ + 680 Ω + 47 Ω | 2927 Ω | 4.83 V | 4.77 to 4.78 V |
+| 2.2 kΩ + 680 Ω + 220 Ω (final) | 3100 Ω | 5.04 V | 4.98 V no load, 4.97 V at 1 A |
+
+The final output is about 1.2% below the prediction. That is inside what to expect: the divider resistors are 1%,
+and the LM2596's reference is specified over a range (about 1.19 V to 1.27 V), so a real chip rarely sits at exactly
+1.23 V. The FB pin read 1.23 V on the finished board, which confirms the chip was regulating to the value in the
+formula. The result that matters more: with the full 5 Ω load the output dropped only 0.01 V from no load.
+
+## Problems and fixes
+
+| Problem | Cause | Fix |
+| --- | --- | --- |
+| Fusion was slow and laggy | Cloud syncing of the design | Looked at alternatives, then stayed in Fusion |
+| ERC said U1's GND pin was on a net named `n$2 1` | The ground wires were drawn as separate nets | Renamed the net to `GND` so every ground connects; ERC then showed zero errors |
+| Screw terminals were a different type than planned | Received angled two-part terminals | Footprint marked as a placeholder; electrically identical |
+| First reading was 5.4 V | A resistor in the chain was skipped in the wiring | Rewired the chain and re-measured |
+| Readings of 5.2 V, then 4.77 V, then 4.78 V | A mix of wiring slips and a partial chain | Rebuilt the chain one resistor at a time, checking FB each time |
+| A 2.2 kΩ resistor read 1.6 kΩ | I measured it while it was still in the circuit | In-circuit readings include parallel paths, so measure resistors out of the circuit |
+| U1 got very hot at 1 A | A bare TO-220 dissipates about 1 to 1.5 W here | Unplugged it, planned a heatsink and a lighter test load |
+
+I can't say for certain which single mistake caused each of the intermediate readings. Each wiring correction moved
+the output closer to the prediction, the FB pin read 1.23 V to 1.27 V throughout (which fits the datasheet range),
+and the final chain matched the calculation once it was wired exactly as designed.
+
+## Heat and the move to a PCB
+
+The perfboard version works, but U1 runs hot at full load, and that is the main thing a PCB should fix. At 1 A
+with the input near 14.5 V, the LM2596 dissipates roughly 1 to 1.5 W in its switch and control circuitry, which is a
+lot for a bare TO-220. The fixes are a heatsink on the tab, airflow, and a 10 Ω load (about 0.5 A) for longer runs.
+A PCB can also spread heat into a copper pour under the tab.
+
+**Status: the PCB version is in progress.** The next step is generating the board from the Fusion schematic and
+laying out the switching loop: place U1, D1, L1 and the capacitors close together, route the high-current loop
+first with wide traces, and add a ground pour with thermal relief for U1. The inductor and C_OUT footprints are
+placeholders to check against the real parts before ordering. The perfboard measurements (4.98 V no load, 4.97 V
+at 1 A) are the baseline the PCB should match or beat.
+
+What I'm carrying forward:
+
+- Measure resistors out of the circuit, and measure FB first when the output is wrong; it shows whether the divider
+  or the chip is at fault.
+- Name the ground net so every ground connects, and run ERC after every wiring change.
+- Keep the switch-node loop (U1, D1, ground) short, and keep the FB wire short and away from L1, since L1 radiates
+  noise.
+- Check the real footprints of L1 and C_OUT before ordering.
+
+## Links
+
+- Source and write-up: [github.com/1Am0/buck-converter](https://github.com/1Am0/buck-converter)
